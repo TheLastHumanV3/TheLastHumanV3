@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>มนุษย์คนสุดท้าย · The Last Human · 2247</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:#04080F;--deep:#0A0E1A;--panel:#0D1526;--indigo:#1A0A3C;
+  --cyan:#00E5FF;--cyan-dim:#007A8A;--amber:#FFB300;--crimson:#FF1744;--green:#00E676;
+  --ghost:#F0F4FF;--muted:#7B8BA5;--border:rgba(0,229,255,0.15);
+}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--ghost);font-family:'Noto Sans Thai',sans-serif;font-weight:400;min-height:100vh;overflow-x:hidden}
+#starfield{position:fixed;inset:0;z-index:0;pointer-events:none}
+#scene-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1.1s ease;background-size:cover;background-position:center}
+#scene-bg.show{opacity:1}
+#scene-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,8,15,0.55) 0%,rgba(4,8,15,0.85) 75%,var(--void) 100%)}
+#scene-particles{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.85}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px)}
+#fx-flash{position:fixed;inset:0;z-index:60;pointer-events:none;background:#fff;opacity:0}
+.fx-flash-play{animation:flashPlay .35s ease}
+@keyframes flashPlay{0%{opacity:0}12%{opacity:.85}100%{opacity:0}}
+.shake{animation:shakeAnim .4s cubic-bezier(.36,.07,.19,.97)}
+@keyframes shakeAnim{10%,90%{transform:translate3d(-1px,0,0)}20%,80%{transform:translate3d(2px,0,0)}30%,50%,70%{transform:translate3d(-4px,0,0)}40%,60%{transform:translate3d(4px,0,0)}}
+#warp{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--void);flex-direction:column;gap:0}
+#warp-tunnel{width:420px;height:420px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0%,rgba(0,229,255,0.06) 10%,transparent 20%,rgba(100,80,255,0.08) 30%,transparent 40%,rgba(0,229,255,0.05) 50%,transparent 60%,rgba(100,80,255,0.07) 70%,transparent 80%,rgba(0,229,255,0.06) 90%,transparent 100%);animation:warpSpin 1.2s linear infinite;position:relative;flex-shrink:0}
+#warp-tunnel::before{content:'';position:absolute;inset:20px;border-radius:50%;background:conic-gradient(from 180deg,transparent 0%,rgba(0,229,255,0.1) 15%,transparent 30%,rgba(147,51,234,0.12) 45%,transparent 60%);animation:warpSpin 0.8s linear infinite reverse}
+#warp-tunnel::after{content:'';position:absolute;inset:60px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.15) 0%,transparent 70%);animation:pulse-warp 2s ease-in-out infinite}
+@keyframes warpSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pulse-warp{0%,100%{transform:scale(0.9);opacity:0.5}50%{transform:scale(1.1);opacity:1}}
+#warp-text-el{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:.4em;color:var(--cyan);text-transform:uppercase;position:absolute;bottom:110px;left:50%;transform:translateX(-50%);animation:blinkText 1s step-end infinite;text-align:center}
+#warp-loadbar{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);width:220px;height:2px;background:rgba(0,229,255,0.12);border-radius:2px;overflow:hidden}
+#warp-loadfill{height:100%;width:0%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);transition:width .2s linear}
+@keyframes blinkText{0%,100%{opacity:1}50%{opacity:0}}
+#warp-streak{position:fixed;inset:0;z-index:55;pointer-events:none;opacity:0;background:repeating-radial-gradient(circle at 50% 50%, rgba(0,229,255,0.35) 0px, transparent 2px, transparent 40px)}
+#blackhole-screen{background:#000;text-align:center;overflow:hidden}
+.bh-vortex-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.bh-hole{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,#000 55%,#1a0a3c 100%);box-shadow:0 0 40px 18px rgba(0,0,0,0.9);position:relative;z-index:3;animation:bhGrow 2.2s cubic-bezier(.6,0,.85,1) forwards}
+@keyframes bhGrow{0%{width:70px;height:70px}70%{width:70px;height:70px}100%{width:2600px;height:2600px}}
+.bh-ring{position:absolute;border-radius:50%;border:2px solid rgba(0,229,255,0.55);z-index:2;animation:bhSpin linear infinite}
+.bh-ring.r1{width:180px;height:180px;border-color:rgba(0,229,255,0.5);animation-duration:1.4s}
+.bh-ring.r2{width:280px;height:280px;border-color:rgba(147,51,234,0.45);animation-duration:2.1s;animation-direction:reverse}
+.bh-ring.r3{width:400px;height:400px;border-color:rgba(255,179,0,0.3);animation-duration:2.8s}
+@keyframes bhSpin{from{transform:rotate(0deg) scale(1)}to{transform:rotate(360deg) scale(1)}}
+.bh-suck{position:absolute;inset:0;z-index:1;animation:bhFadeIn 2s ease forwards .4s;opacity:0}
+@keyframes bhFadeIn{to{opacity:1}}
+#blackhole-screen.sucking .bh-vortex-wrap>*{animation-play-state:running}
+.bh-message{position:relative;z-index:5;max-width:560px;padding:0 24px;font-family:'Orbitron',monospace;font-size:clamp(16px,3.4vw,24px);line-height:1.9;letter-spacing:.04em;color:var(--cyan);opacity:0;text-shadow:0 0 24px rgba(0,229,255,0.5);animation:bhMsgIn 1.1s ease forwards}
+@keyframes bhMsgIn{to{opacity:1}}
+.warp-streak-play{animation:streakPlay .5s ease}
+@keyframes streakPlay{0%{opacity:0;transform:scale(1)}40%{opacity:.9;transform:scale(1.6)}100%{opacity:0;transform:scale(2.4)}}
+.screen{position:relative;z-index:2;min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px}
+.screen.active{display:flex}
+#intro-screen{text-align:center;gap:0}
+.intro-earth{font-size:90px;animation:floatEarth 5s ease-in-out infinite;display:block;margin-bottom:28px;filter:drop-shadow(0 0 40px rgba(0,229,255,0.35))}
+@keyframes floatEarth{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-18px) rotate(3deg)}}
+.hud-label{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:.45em;color:var(--cyan-dim);text-transform:uppercase;margin-bottom:10px}
+.intro-title{font-family:'Orbitron',monospace;font-size:clamp(26px,5.5vw,54px);font-weight:900;line-height:1.1;background:linear-gradient(135deg,var(--ghost) 0%,var(--cyan) 50%,var(--ghost) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.intro-year{font-family:'Orbitron',monospace;font-size:clamp(13px,2.5vw,18px);color:var(--amber);letter-spacing:.2em;margin-bottom:36px}
+.intro-lore{max-width:600px;font-size:16px;line-height:2;color:#A0AEBF;margin:0 auto 40px}
+.intro-lore strong{color:var(--cyan);font-weight:600}
+.stat-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:36px}
+.stat-chip{border:1px solid rgba(0,229,255,0.2);border-radius:6px;padding:8px 16px;font-size:12px;color:var(--muted);background:rgba(0,229,255,0.04)}
+.stat-chip b{color:var(--ghost);font-weight:700}
+.intro-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center}
+.history-panel{margin-top:34px;max-width:560px;width:100%;border:1px solid var(--border);border-radius:4px;background:rgba(0,229,255,0.03);padding:14px 18px;font-size:12px;color:var(--muted);text-align:left;display:none}
+.history-panel.show{display:block}
+.history-panel .h-title{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.25em;color:var(--cyan);margin-bottom:8px;text-transform:uppercase}
+.history-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.history-row:last-child{border-bottom:none}
+.btn-launch{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:18px 52px;border:none;border-radius:4px;background:var(--cyan);color:var(--void);cursor:pointer;position:relative;overflow:hidden;transition:all .2s;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%)}
+.btn-launch::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);transform:translateX(-100%);transition:transform .4s}
+.btn-launch:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,229,255,0.5)}
+.btn-launch:hover::before{transform:translateX(100%)}
+.btn-launch:active{transform:translateY(0) scale(.97)}
+.btn-ghost{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:14px 28px;border-radius:4px;background:transparent;border:1px solid rgba(0,229,255,0.3);color:var(--cyan);cursor:pointer;transition:all .2s;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%)}
+.btn-ghost:hover{background:rgba(0,229,255,0.1);box-shadow:0 0 20px rgba(0,229,255,0.2)}
+.ripple{position:relative;overflow:hidden}
+.ripple-dot{position:absolute;border-radius:50%;background:rgba(255,255,255,0.5);transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none}
+@keyframes rippleAnim{to{transform:scale(3);opacity:0}}
+#tap-continue-overlay{position:fixed;inset:0;z-index:45;display:none;align-items:flex-end;justify-content:center;padding-bottom:64px;cursor:pointer}
+#tap-continue-overlay.show{display:flex}
+#tap-continue-overlay .tap-hint{font-family:'Orbitron',monospace;font-size:12px;letter-spacing:.2em;color:var(--cyan);background:rgba(13,21,38,0.88);border:1px solid rgba(0,229,255,0.35);padding:12px 26px;border-radius:30px;text-transform:uppercase;animation:tapPulse 1.4s ease-in-out infinite;box-shadow:0 0 20px rgba(0,229,255,0.15)}
+@keyframes tapPulse{0%,100%{opacity:.55;transform:translateY(0)}50%{opacity:1;transform:translateY(-6px)}}
+#top-hud{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;gap:10px;background:linear-gradient(180deg,rgba(4,8,15,0.92),rgba(4,8,15,0));backdrop-filter:blur(2px);display:none}
+#top-hud.show{display:flex}
+.hud-stats{display:flex;gap:8px;flex-wrap:wrap}
+.hud-pill{display:flex;align-items:center;gap:6px;border:1px solid rgba(0,229,255,0.18);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--muted);background:rgba(13,21,38,0.75);font-family:'Orbitron',monospace;transition:box-shadow .3s, border-color .3s}
+.hud-pill b{color:var(--ghost);font-size:12px;min-width:16px;display:inline-block;text-align:center}
+.hud-pill.pulse{border-color:var(--amber);box-shadow:0 0 14px rgba(255,179,0,0.55)}
+.hud-controls{display:flex;gap:8px;align-items:center}
+.hud-btn{width:34px;height:34px;border-radius:50%;border:1px solid rgba(0,229,255,0.25);background:rgba(13,21,38,0.75);color:var(--cyan);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.hud-btn:hover{background:rgba(0,229,255,0.12);transform:translateY(-1px)}
+#game-screen{gap:0;padding:76px 16px 40px}
+.progress-wrap{width:100%;max-width:720px;display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.progress-track{height:4px;background:rgba(0,229,255,0.1);border-radius:2px;overflow:hidden;position:relative}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px var(--cyan);position:relative}
+.progress-fill::after{content:'';position:absolute;right:0;top:-3px;bottom:-3px;width:10px;background:radial-gradient(circle,rgba(255,255,255,0.9),transparent 70%)}
+.progress-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:10.5px;color:var(--muted);font-family:'Orbitron',monospace;letter-spacing:.08em}
+.dot-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.2);transition:all .4s;flex-shrink:0}
+.dot.done{background:var(--cyan-dim);border-color:var(--cyan-dim)}
+.dot.active{background:var(--amber);border-color:var(--amber);box-shadow:0 0 8px var(--amber);animation:dotPulse 1s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+.progress-extra{display:flex;gap:14px;flex-wrap:wrap}
+.cockpit{width:100%;max-width:720px;background:rgba(13,21,38,0.86);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:2px;position:relative;box-shadow:0 0 60px rgba(0,229,255,0.07),inset 0 1px 0 rgba(0,229,255,0.08)}
+.cockpit::before,.cockpit::after{content:'';position:absolute;width:18px;height:18px;border-color:var(--cyan);border-style:solid}
+.cockpit::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+.cockpit::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+.cockpit-inner{padding:32px 32px 28px}
+.scene-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.scene-badge{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.3em;color:var(--void);background:var(--cyan);padding:4px 10px;border-radius:2px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);flex-shrink:0}
+.scene-sep{flex:1;height:1px;background:var(--border)}
+.scene-num{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);letter-spacing:.2em}
+.scene-head{display:flex;align-items:center;gap:20px;margin-bottom:24px}
+.scene-icon-wrap{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.1),transparent 70%);border:1px solid rgba(0,229,255,0.2);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;animation:iconGlow 3s ease-in-out infinite}
+@keyframes iconGlow{0%,100%{box-shadow:0 0 12px rgba(0,229,255,0.15)}50%{box-shadow:0 0 24px rgba(0,229,255,0.35)}}
+.scene-title-block .scene-loc{font-size:11px;color:var(--cyan);letter-spacing:.3em;text-transform:uppercase;margin-bottom:6px;font-family:'Orbitron',monospace}
+.scene-title-block h2{font-family:'Orbitron',monospace;font-size:clamp(16px,2.8vw,22px);font-weight:700;color:var(--ghost);line-height:1.2}
+.scene-narrative{font-size:16px;line-height:1.9;color:#B0BCCC;margin-bottom:20px}
+.memory-box{background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.18);border-left:3px solid var(--cyan);border-radius:0 4px 4px 0;padding:14px 18px;margin-bottom:18px}
+.memory-box .memory-tag{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.3em;color:var(--cyan);text-transform:uppercase;display:block;margin-bottom:6px}
+.memory-box p{font-size:14px;line-height:1.8;color:#BFE9F0}
+.climate-box{background:rgba(255,23,68,0.05);border:1px solid rgba(255,23,68,0.2);border-left:3px solid var(--crimson);border-radius:0 4px 4px 0;padding:14px 18px;margin-bottom:20px}
+.climate-box .climate-tag{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.3em;color:var(--crimson);text-transform:uppercase;display:block;margin-bottom:6px}
+.climate-box p{font-size:13.5px;line-height:1.7;color:#FFAAAA}
+.choices-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{background:rgba(0,229,255,0.03);border:1px solid rgba(0,229,255,0.15);border-radius:2px;padding:16px 18px;cursor:pointer;text-align:left;color:var(--ghost);font-family:'Noto Sans Thai',sans-serif;font-size:15px;line-height:1.6;display:flex;align-items:flex-start;gap:14px;transition:all .2s;position:relative;overflow:hidden;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
+.choice::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,229,255,0.08),transparent);opacity:0;transition:opacity .2s}
+.choice:hover{border-color:var(--cyan);transform:translateX(6px)}
+.choice:hover::before{opacity:1}
+.choice:disabled{opacity:.5;pointer-events:none}
+.choice-key{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:var(--void);background:var(--cyan-dim);padding:4px 10px;border-radius:2px;flex-shrink:0;margin-top:2px;letter-spacing:.1em}
+#arrival-screen{gap:0;padding:40px 16px 60px;text-align:center}
+#arrival-screen.landed{background:radial-gradient(circle at 50% 20%,rgba(255,200,120,0.12),transparent 60%)}
+.arrival-wrap{max-width:640px;width:100%}
+.arrival-badge{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:.4em;color:var(--cyan);text-transform:uppercase;margin-bottom:22px}
+.arrival-ai-box{min-height:170px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;margin-bottom:10px}
+.ai-line{font-size:17px;line-height:1.9;color:var(--ghost);opacity:0;transform:translateY(10px);transition:all .7s ease;max-width:560px}
+.ai-line.show{opacity:1;transform:translateY(0)}
+.ai-line .ai-tag{display:block;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.3em;color:var(--cyan-dim);margin-bottom:8px;text-transform:uppercase}
+.ai-line strong{color:var(--amber)}
+.landing-visuals{display:flex;gap:22px;justify-content:center;margin:26px 0;flex-wrap:wrap}
+.landing-visuals span{font-size:0px;opacity:0;transform:translateY(20px) scale(.5);transition:all .6s cubic-bezier(.34,1.56,.64,1);display:inline-block}
+.landing-visuals span.show{font-size:52px;opacity:1;transform:translateY(0) scale(1)}
+.landing-visuals span:nth-child(1).show{animation:floatEarth 4s ease-in-out infinite}
+.landing-visuals span:nth-child(4).show{animation:floatEarth 5s ease-in-out infinite}
+.final-choice-label{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;margin:30px 0 16px;opacity:0;transition:opacity .6s}
+.final-choice-label.show{opacity:1}
+.final-choices{display:flex;flex-direction:column;gap:10px;opacity:0;max-height:0;overflow:hidden;transition:opacity .6s}
+.final-choices.show{opacity:1;max-height:600px}
+.final-choice-btn{background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.25);border-radius:2px;padding:16px 18px;cursor:pointer;text-align:left;color:var(--ghost);font-family:'Noto Sans Thai',sans-serif;font-size:15px;line-height:1.6;transition:all .2s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
+.final-choice-btn:hover{border-color:var(--green);transform:translateX(6px);background:rgba(0,230,118,0.1)}
+.final-choice-btn:disabled{opacity:.4;pointer-events:none}
+.closing-message{margin-top:36px;font-size:18px;line-height:2;color:var(--amber);font-style:italic;opacity:0;transition:opacity 1s}
+.closing-message.show{opacity:1}
+#result-screen{gap:32px;padding:40px 16px 60px}
+.result-wrap{width:100%;max-width:680px}
+.result-star-display{text-align:center;margin-bottom:4px}
+.result-star-emoji{font-size:90px;display:block;margin:0 auto 12px;animation:floatEarth 4s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(255,179,0,0.5))}
+.result-const-label{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:.5em;color:var(--amber);text-transform:uppercase;margin-bottom:10px}
+.result-star-name{font-family:'Orbitron',monospace;font-size:clamp(24px,5vw,46px);font-weight:900;background:linear-gradient(135deg,var(--amber),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:6px}
+.result-star-sub{font-size:15px;color:var(--muted);font-style:italic;margin-bottom:36px}
+.result-card{background:var(--panel);border:1px solid rgba(255,179,0,0.2);border-radius:2px;padding:28px 28px 24px;margin-bottom:16px;position:relative}
+.result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.result-card-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;margin-bottom:12px}
+.result-card p{font-size:15px;line-height:2;color:#B0BCCC}
+.heal-box{background:rgba(0,230,118,0.06);border:1px solid rgba(0,230,118,0.2);border-radius:2px;padding:22px 24px;text-align:center;margin-top:4px}
+.heal-box .heal-star{font-size:22px;display:block;margin-bottom:10px}
+.heal-box p{font-size:16px;line-height:2;color:var(--green);font-style:italic}
+.score-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.score-chip{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:10px 18px;font-size:13px;color:var(--muted);text-align:center}
+.score-chip span{display:block;font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--ghost);margin-top:2px}
+.result-climate{background:rgba(0,229,255,0.04);border:1px solid var(--border);border-radius:2px;padding:22px 24px;margin-top:4px}
+.result-climate p{font-size:14.5px;line-height:2;color:#8ABEC9}
+.result-climate strong{color:var(--cyan)}
+.btn-restart{display:block;margin:28px auto 0;font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;padding:14px 36px;background:transparent;border:1px solid rgba(0,229,255,0.3);color:var(--cyan);border-radius:2px;cursor:pointer;transition:all .2s;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%)}
+.btn-restart:hover{background:rgba(0,229,255,0.1);box-shadow:0 0 20px rgba(0,229,255,0.2)}
+.result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+.result-actions .btn-ghost, .result-actions .btn-launch{min-width:170px}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.ach-item{border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:12px 10px;text-align:center;background:rgba(255,255,255,0.02)}
+.ach-item.locked{opacity:.28;filter:grayscale(1)}
+.ach-item .ach-emoji{font-size:26px;display:block;margin-bottom:6px}
+.ach-item .ach-name{font-size:11px;color:var(--muted)}
+#radar-canvas{display:block;margin:0 auto}
+#toast-wrap{position:fixed;top:70px;right:16px;z-index:90;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:min(280px,calc(100vw - 32px))}
+.toast{background:rgba(13,21,38,0.95);border:1px solid var(--amber);border-radius:4px;padding:12px 16px;display:flex;gap:12px;align-items:center;min-width:220px;max-width:280px;box-shadow:0 0 30px rgba(255,179,0,0.25);animation:toastIn .4s ease, toastOut .4s ease 3.8s forwards}
+.toast .t-emoji{font-size:24px}
+.toast .t-text b{display:block;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:.15em;color:var(--amber);margin-bottom:2px}
+.toast .t-text span{font-size:12.5px;color:var(--ghost)}
+@keyframes toastIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes toastOut{to{transform:translateX(120%);opacity:0}}
+.modal-overlay{position:fixed;inset:0;z-index:80;background:rgba(4,8,15,0.8);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:28px;max-width:380px;width:100%;position:relative;animation:fadeUp .3s ease;margin:auto}
+.modal-title{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:.2em;color:var(--cyan);text-transform:uppercase;margin-bottom:20px;text-align:center}
+.modal-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-size:14px;color:var(--muted)}
+.switch{position:relative;width:44px;height:24px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch-track{position:absolute;inset:0;background:rgba(255,255,255,0.15);border-radius:24px;cursor:pointer;transition:.2s}
+.switch-track::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.switch input:checked + .switch-track{background:var(--cyan)}
+.switch input:checked + .switch-track::before{transform:translateX(20px)}
+.vol-slider{width:120px;accent-color:var(--cyan)}
+.modal-actions{display:flex;gap:10px;margin-top:22px}
+.modal-actions button{flex:1}
+.btn-danger{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:12px;border-radius:4px;cursor:pointer;background:rgba(255,23,68,0.12);border:1px solid rgba(255,23,68,0.4);color:#FF6B87;transition:all .2s}
+.btn-danger:hover{background:rgba(255,23,68,0.22)}
+.modal-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--muted);cursor:pointer}
+.platform-share-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.platform-btn{flex:1;min-width:72px;font-family:'Orbitron',monospace;font-size:9px;font-weight:700;letter-spacing:.08em;padding:10px 4px;border-radius:4px;cursor:pointer;text-align:center;transition:all .2s;border:1px solid}
+.platform-btn.fb{background:rgba(24,119,242,0.12);border-color:rgba(24,119,242,0.5);color:#7FB3FF}
+.platform-btn.fb:hover{background:rgba(24,119,242,0.25)}
+.platform-btn.x{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.3);color:#F0F4FF}
+.platform-btn.x:hover{background:rgba(255,255,255,0.14)}
+.platform-btn.line{background:rgba(0,196,64,0.12);border-color:rgba(0,196,64,0.5);color:#6FE39A}
+.platform-btn.line:hover{background:rgba(0,196,64,0.25)}
+.platform-btn.discord{background:rgba(88,101,242,0.12);border-color:rgba(88,101,242,0.5);color:#A6ACFF}
+.platform-btn.discord:hover{background:rgba(88,101,242,0.25)}
+.fade-in{animation:fadeUp .55s ease forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.cockpit-inner{padding:22px 16px 20px}.scene-head{gap:12px}.scene-icon-wrap{width:48px;height:48px;font-size:24px}.result-card{padding:20px 16px}#game-screen{padding-top:96px}.hud-stats{gap:5px}.hud-pill{padding:4px 8px;font-size:10px}.ai-line{font-size:15px}}
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div id="scene-bg"></div>
+<canvas id="scene-particles"></canvas>
+<div id="fx-flash"></div>
+<div id="warp-streak"></div>
+
+<div id="warp">
+  <div id="warp-tunnel"></div>
+  <div id="warp-text-el">กำลังเชื่อมต่อระบบเฝ้าระวังภูมิอากาศ…</div>
+  <div id="warp-loadbar"><div id="warp-loadfill"></div></div>
+</div>
+
+<div id="toast-wrap"></div>
+
+<div id="top-hud">
+  <div class="hud-stats" id="hud-stats"></div>
+  <div class="hud-controls">
+    <button class="hud-btn" id="sound-toggle-btn" title="เปิด/ปิดเสียง">🔊</button>
+    <button class="hud-btn" id="pause-btn" title="หยุดชั่วคราว">⏸</button>
+  </div>
+</div>
+
+<div class="screen" id="intro-screen">
+  <span class="intro-earth">🌍</span>
+  <div class="hud-label">PROJECT NEW EARTH · บันทึกวันสิ้นโลก</div>
+  <h1 class="intro-title">มนุษย์คนสุดท้าย</h1>
+  <div class="intro-year">THE LAST HUMAN · ปีค.ศ. 2231–2247</div>
+  <p class="intro-lore">
+    คุณคือนักวิจัยภูมิอากาศประจำสถานีเล็กๆ ริมขอบทะเลทรายที่ขยายตัวทุกปี<br>
+    โลกกำลังเดินเข้าสู่จุดที่ย้อนกลับไม่ได้<br>
+    ทุกการตัดสินใจของคุณจะถูกจดจำและส่งผลตลอดการเดินทางสู่ <strong>Nova Terra</strong><br><br>
+    <strong>นี่ไม่ใช่แบบทดสอบ</strong> — นี่คือเรื่องราวที่คุณกำลังจะเขียนขึ้นเอง
+  </p>
+  <div class="stat-row">
+    <div class="stat-chip">⚡ <b>16 บท</b> · 3 องก์</div>
+    <div class="stat-chip">🌡️ อุณหภูมิ <b>+6.0°C</b></div>
+    <div class="stat-chip">🎯 ปลายทาง <b>Nova Terra</b></div>
+    <div class="stat-chip">⏱️ เล่นราว <b>15–20 นาที</b></div>
+  </div>
+  <div class="intro-actions">
+    <button class="btn-launch ripple" id="start-btn">▶ เริ่มภารกิจ</button>
+    <button class="btn-ghost ripple" id="settings-btn-intro">⚙ ตั้งค่า</button>
+  </div>
+  <div class="history-panel" id="history-panel">
+    <div class="h-title">📊 บันทึกการเดินทางก่อนหน้า (เซสชันนี้)</div>
+    <div id="history-body"></div>
+  </div>
+</div>
+
+<div class="screen" id="game-screen">
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+    <div class="progress-meta">
+      <div class="dot-row" id="dots"></div>
+      <div id="prog-label"></div>
+    </div>
+    <div class="progress-extra">
+      <span id="prog-pct">0%</span>
+      <span id="prog-elapsed">⏱ 00:00</span>
+    </div>
+  </div>
+  <div class="cockpit fade-in" id="cockpit">
+    <div class="cockpit-inner" id="cockpit-inner"></div>
+  </div>
+</div>
+
+<div class="screen" id="blackhole-screen">
+  <div class="bh-vortex-wrap" id="bh-vortex-wrap"></div>
+</div>
+
+<div id="tap-continue-overlay"><div class="tap-hint">แตะหน้าจอเพื่อไปต่อ ▶</div></div>
+
+<div class="screen" id="arrival-screen">
+  <div class="arrival-wrap">
+    <div class="arrival-badge">ARRIVAL SEQUENCE · NOVA TERRA</div>
+    <div class="arrival-ai-box" id="arrival-ai-box"></div>
+    <div class="landing-visuals" id="landing-visuals">
+      <span>🌱</span><span>🌊</span><span>🐦</span><span>☀️</span>
+    </div>
+    <div class="final-choice-label" id="final-choice-label">— เลือกแนวทางอารยธรรมใหม่ —</div>
+    <div class="final-choices" id="final-choices"></div>
+    <div class="closing-message" id="closing-message"></div>
+  </div>
+</div>
+
+<div class="screen" id="result-screen">
+  <div class="result-wrap fade-in" id="result-content"></div>
+</div>
+
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal-box">
+    <button class="modal-close" data-close="settings-modal">✕</button>
+    <div class="modal-title">⚙ ตั้งค่าเสียง</div>
+    <div class="modal-row"><span>เปิดเสียงทั้งหมด</span><label class="switch"><input type="checkbox" id="sound-switch" checked><span class="switch-track"></span></label></div>
+    <div class="modal-row"><span>ระดับเสียง</span><input type="range" class="vol-slider" id="vol-slider" min="0" max="100" value="55"></div>
+    <div class="modal-actions"><button class="btn-ghost" data-close="settings-modal" style="flex:1">ปิดหน้าต่าง</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="pause-modal">
+  <div class="modal-box">
+    <button class="modal-close" data-close="pause-modal">✕</button>
+    <div class="modal-title">⏸ หยุดชั่วคราว</div>
+    <div class="modal-row"><span>เปิดเสียงทั้งหมด</span><label class="switch"><input type="checkbox" id="sound-switch-2" checked><span class="switch-track"></span></label></div>
+    <div class="modal-row"><span>ระดับเสียง</span><input type="range" class="vol-slider" id="vol-slider-2" min="0" max="100" value="55"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" data-close="pause-modal">▶ เล่นต่อ</button>
+      <button class="btn-danger" id="restart-from-pause">↺ เริ่มใหม่</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-box">
+    <div class="modal-title">⚠ ยืนยันเริ่มภารกิจใหม่</div>
+    <p style="font-size:13.5px;color:var(--muted);line-height:1.8;text-align:center">ความคืบหน้าทั้งหมดของภารกิจนี้จะหายไป คุณแน่ใจหรือไม่?</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" data-close="confirm-modal">ยกเลิก</button>
+      <button class="btn-danger" id="confirm-restart-yes">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="share-preview-modal">
+  <div class="modal-box" style="max-width:360px">
+    <button class="modal-close" data-close="share-preview-modal">✕</button>
+    <div class="modal-title">📤 แชร์ผลลัพธ์</div>
+    <img id="share-preview-img" style="width:100%;border-radius:6px;border:1px solid var(--border);margin-bottom:16px;display:block" />
+    <div class="platform-share-row">
+      <button class="platform-btn fb" id="share-fb-btn">Facebook</button>
+      <button class="platform-btn x" id="share-x-btn">X</button>
+      <button class="platform-btn line" id="share-line-btn">LINE</button>
+      <button class="platform-btn discord" id="share-discord-btn">Discord</button>
+    </div>
+    <div class="modal-actions" style="flex-direction:column;gap:8px">
+      <button class="btn-launch" id="share-native-btn" style="width:100%">📲 แชร์ผ่านอุปกรณ์นี้</button>
+      <button class="btn-ghost" id="share-download-btn" style="width:100%">⬇ ดาวน์โหลดรูปภาพ</button>
+      <button class="btn-ghost" id="share-copylink-btn" style="width:100%">🔗 คัดลอกลิงก์เกม</button>
+    </div>
+  </div>
+</div>
+<canvas id="share-card-canvas" style="display:none"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" async></script>
+<script>
+/* STARFIELD */
+const cv=document.getElementById('starfield');const cx=cv.getContext('2d');
+let W,H,stars=[];
+function resizeCv(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;initStars()}
+function initStars(){stars=[];for(let i=0;i<220;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.2,base:Math.random()*.7+.15,phase:Math.random()*Math.PI*2,speed:Math.random()*.006+.002})}
+function drawStars(t){cx.clearRect(0,0,W,H);stars.forEach(s=>{const o=s.base*(.5+.5*Math.sin(t*s.speed+s.phase));cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle=`rgba(255,255,255,${o})`;cx.fill()});requestAnimationFrame(drawStars)}
+window.addEventListener('resize',resizeCv);resizeCv();requestAnimationFrame(drawStars);
+
+/* AUDIO ENGINE */
+const Audio1={
+  ctx:null,master:null,ambientNodes:[],muted:false,volume:.55,
+  init(){if(this.ctx)return;this.ctx=new (window.AudioContext||window.webkitAudioContext)();this.master=this.ctx.createGain();this.master.gain.value=this.muted?0:this.volume;this.master.connect(this.ctx.destination);this.startAmbient()},
+  setVolume(v){this.volume=v;if(this.master&&!this.muted)this.master.gain.setTargetAtTime(v,this.ctx.currentTime,.1)},
+  toggleMute(forced){this.muted=(forced!==undefined)?forced:!this.muted;if(this.master)this.master.gain.setTargetAtTime(this.muted?0:this.volume,this.ctx.currentTime,.1);document.querySelectorAll('#sound-toggle-btn').forEach(b=>b.textContent=this.muted?'🔇':'🔊')},
+  tone(freq,dur,type='sine',vol=.25,delay=0){if(!this.ctx)return;const t0=this.ctx.currentTime+delay;const osc=this.ctx.createOscillator();osc.type=type;osc.frequency.setValueAtTime(freq,t0);const g=this.ctx.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(vol,t0+.02);g.gain.exponentialRampToValueAtTime(.0001,t0+dur);osc.connect(g);g.connect(this.master);osc.start(t0);osc.stop(t0+dur+.05)},
+  noise(dur,vol=.2,delay=0,filterFreq=1200){if(!this.ctx)return;const t0=this.ctx.currentTime+delay;const bufSize=this.ctx.sampleRate*dur;const buf=this.ctx.createBuffer(1,bufSize,this.ctx.sampleRate);const data=buf.getChannelData(0);for(let i=0;i<bufSize;i++)data[i]=Math.random()*2-1;const src=this.ctx.createBufferSource();src.buffer=buf;const filt=this.ctx.createBiquadFilter();filt.type='bandpass';filt.frequency.value=filterFreq;const g=this.ctx.createGain();g.gain.setValueAtTime(vol,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+dur);src.connect(filt);filt.connect(g);g.connect(this.master);src.start(t0)},
+  click(){this.tone(880,.08,'square',.12);this.tone(1320,.05,'sine',.06,.02)},
+  hover(){this.tone(1200,.05,'sine',.04)},
+  select(){this.tone(660,.12,'triangle',.15);this.tone(990,.18,'sine',.1,.05)},
+  warp(){this.noise(.6,.18,0,2000);this.tone(120,.6,'sawtooth',.12)},
+  warning(){this.tone(440,.15,'square',.14);this.tone(440,.15,'square',.14,.22)},
+  gameOver(){this.tone(523,.3,'sine',.15);this.tone(659,.3,'sine',.15,.15);this.tone(784,.5,'sine',.18,.3)},
+  achievement(){this.tone(784,.15,'sine',.15);this.tone(988,.15,'sine',.15,.12);this.tone(1318,.3,'sine',.18,.24)},
+  chime(){this.tone(523,.35,'sine',.14);this.tone(659,.35,'sine',.12,.18);this.tone(880,.5,'sine',.1,.36)},
+  startAmbient(){const o1=this.ctx.createOscillator();o1.type='sine';o1.frequency.value=55;const o2=this.ctx.createOscillator();o2.type='sine';o2.frequency.value=82.5;const lfo=this.ctx.createOscillator();lfo.type='sine';lfo.frequency.value=.05;const lfoGain=this.ctx.createGain();lfoGain.gain.value=.03;const g=this.ctx.createGain();g.gain.value=.05;lfo.connect(lfoGain);lfoGain.connect(g.gain);o1.connect(g);o2.connect(g);g.connect(this.master);o1.start();o2.start();lfo.start();this.ambientNodes=[o1,o2,lfo];const bufSize=this.ctx.sampleRate*2;const buf=this.ctx.createBuffer(1,bufSize,this.ctx.sampleRate);const data=buf.getChannelData(0);for(let i=0;i<bufSize;i++)data[i]=Math.random()*2-1;const src=this.ctx.createBufferSource();src.buffer=buf;src.loop=true;const filt=this.ctx.createBiquadFilter();filt.type='lowpass';filt.frequency.value=180;const hg=this.ctx.createGain();hg.gain.value=.035;src.connect(filt);filt.connect(hg);hg.connect(this.master);src.start()}
+};
+
+/* IN-MEMORY STORAGE (no localStorage in Claude.ai artifacts) */
+let gameData={playCount:0,history:[]}; // 🔁 replace with: JSON.parse(localStorage.getItem('lastHuman')||'{"playCount":0,"history":[]}')
+function saveGameData(){/* 🔁 uncomment when self-hosted: localStorage.setItem('lastHuman', JSON.stringify(gameData)); */}
+function recordPlaythrough(record){gameData.playCount++;gameData.history.unshift(record);gameData.history=gameData.history.slice(0,8);saveGameData()}
+function renderHistoryPanel(){
+  const panel=document.getElementById('history-panel');const body=document.getElementById('history-body');
+  if(!gameData.history.length){panel.classList.remove('show');return}
+  panel.classList.add('show');
+  body.innerHTML=`<div class="history-row"><span>เล่นทั้งหมด</span><b>${gameData.playCount} ครั้ง</b></div>`+gameData.history.map(h=>`<div class="history-row"><span>${h.date}</span><span>${h.emoji} ${h.name}</span></div>`).join('');
+}
+
+/* ACHIEVEMENTS */
+const ACHIEVEMENTS=[
+  {id:'guardian',emoji:'🌍',name:'ผู้พิทักษ์โลก',cond:s=>s.empathy>=10&&s.survival>=6},
+  {id:'explorer',emoji:'🚀',name:'นักสำรวจจักรวาล',cond:s=>s.courage>=10},
+  {id:'sacrifice',emoji:'❤️',name:'ผู้เสียสละ',cond:s=>s.empathy===Math.max(s.survival,s.empathy,s.wisdom,s.courage)&&s.empathy>=9},
+  {id:'scientist',emoji:'🧠',name:'นักวิทยาศาสตร์',cond:s=>s.wisdom>=10},
+  {id:'leader',emoji:'👑',name:'ผู้นำแห่งมนุษยชาติ',cond:s=>s.survival>=6&&s.empathy>=6&&s.wisdom>=6&&s.courage>=6},
+  {id:'newworld',emoji:'🌱',name:'ผู้สร้างโลกใหม่',cond:s=>s.survival>=8&&s.wisdom>=8},
+  {id:'balance',emoji:'⚖',name:'ผู้รักษาสมดุล',cond:s=>{const v=[s.survival,s.empathy,s.wisdom,s.courage];return (Math.max(...v) - Math.min(...v))<=3&&Math.min(...v)>=6}},
+];
+let unlockedAchievements=[];
+function checkAchievements(finalScore){unlockedAchievements=ACHIEVEMENTS.filter(a=>a.cond(finalScore));return unlockedAchievements}
+function showToast(a){const wrap=document.getElementById('toast-wrap');const el=document.createElement('div');el.className='toast';el.innerHTML=`<span class="t-emoji">${a.emoji}</span><span class="t-text"><b>ปลดล็อกความสำเร็จ</b><span>${a.name}</span></span>`;wrap.appendChild(el);setTimeout(()=>el.remove(),4300)}
+function showFriendInviteToast(){const wrap=document.getElementById('toast-wrap');const el=document.createElement('div');el.className='toast';el.innerHTML=`<span class="t-emoji">🤝</span><span class="t-text"><b>ชวนเพื่อนร่วมภารกิจ</b><span>ส่งภารกิจนี้ให้เพื่อน แล้วดูว่าใครจะพามนุษยชาติอยู่รอดได้ดีกว่ากัน</span></span>`;wrap.appendChild(el);setTimeout(()=>el.remove(),4300)}
+
+/* CINEMATIC SCENE BACKGROUNDS + PARTICLES */
+const SCENE_VISUALS={
+  1:{grad:'radial-gradient(circle at 30% 25%,#4a2a0a,#04080F 70%)',particle:'dust'},
+  2:{grad:'radial-gradient(circle at 55% 30%,#5a1a0a,#04080F 70%)',particle:'meteor'},
+  3:{grad:'radial-gradient(circle at 45% 30%,#0a2a4a,#04080F 70%)',particle:'star'},
+  4:{grad:'radial-gradient(circle at 50% 25%,#5a3a0a,#04080F 70%)',particle:'dust'},
+  5:{grad:'radial-gradient(circle at 50% 30%,#2a1a4a,#04080F 70%)',particle:'nebula'},
+  6:{grad:'radial-gradient(circle at 40% 30%,#3a2a10,#04080F 70%)',particle:'dust'},
+  7:{grad:'radial-gradient(circle at 50% 30%,#5a1a1a,#04080F 70%)',particle:'meteor'},
+  8:{grad:'radial-gradient(circle at 50% 30%,#5a3a10,#04080F 70%)',particle:'meteor'},
+  9:{grad:'radial-gradient(circle at 50% 35%,#0a3a4a,#04080F 70%)',particle:'nebula'},
+  10:{grad:'radial-gradient(circle at 50% 25%,#3a2a4a,#04080F 70%)',particle:'aurora'},
+  11:{grad:'radial-gradient(circle at 50% 50%,#0a1a2e,#04080F 70%)',particle:'star'},
+  12:{grad:'radial-gradient(circle at 50% 40%,#2a2a30,#04080F 70%)',particle:'meteor'},
+  13:{grad:'radial-gradient(circle at 50% 50%,#1a0a2a,#000 75%)',particle:'nebula'},
+  14:{grad:'radial-gradient(circle at 50% 40%,#0a2a3a,#04080F 70%)',particle:'star'},
+  15:{grad:'radial-gradient(circle at 45% 30%,#0a4a1a,#04080F 70%)',particle:'aurora'},
+  16:{grad:'radial-gradient(circle at 50% 30%,#2a1a4a,#04080F 70%)',particle:'nebula'},
+};
+const sceneBgEl=document.getElementById('scene-bg');
+const pcv=document.getElementById('scene-particles');const pcx=pcv.getContext('2d');
+let PW,PH,particles=[],currentParticleType='dust';
+function resizePcv(){PW=pcv.width=window.innerWidth;PH=pcv.height=window.innerHeight}
+window.addEventListener('resize',resizePcv);resizePcv();
+function seedParticles(type){
+  particles=[];currentParticleType=type;
+  const count=type==='meteor'?18:type==='star'?90:type==='nebula'?40:type==='aurora'?6:60;
+  for(let i=0;i<count;i++){
+    if(type==='meteor')particles.push({x:Math.random()*PW,y:Math.random()*PH*.4,len:Math.random()*80+40,speed:Math.random()*6+4,angle:.5,op:Math.random()*.6+.3});
+    else if(type==='star')particles.push({x:Math.random()*PW,y:Math.random()*PH,r:Math.random()*1.6+.4,phase:Math.random()*Math.PI*2,speed:Math.random()*.01+.004});
+    else if(type==='nebula')particles.push({x:Math.random()*PW,y:Math.random()*PH,r:Math.random()*90+40,hue:Math.random()*60+180,phase:Math.random()*Math.PI*2});
+    else if(type==='aurora')particles.push({x:Math.random()*PW,amp:Math.random()*40+20,speed:Math.random()*.5+.2,hue:130+Math.random()*80,offset:Math.random()*Math.PI*2});
+    else particles.push({x:Math.random()*PW,y:Math.random()*PH,r:Math.random()*2+.5,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,op:Math.random()*.4+.1});
+  }
+}
+let pFrame=0;
+function drawParticles(){
+  pFrame++;pcx.clearRect(0,0,PW,PH);
+  if(currentParticleType==='meteor'){particles.forEach(m=>{m.x-=m.speed;m.y+=m.speed*m.angle;if(m.x<-100||m.y>PH+100){m.x=Math.random()*PW+PW*.3;m.y=-20}const grad=pcx.createLinearGradient(m.x,m.y,m.x+m.len,m.y-m.len*m.angle);grad.addColorStop(0,`rgba(255,255,255,${m.op})`);grad.addColorStop(1,'rgba(255,255,255,0)');pcx.strokeStyle=grad;pcx.lineWidth=2;pcx.beginPath();pcx.moveTo(m.x,m.y);pcx.lineTo(m.x+m.len,m.y-m.len*m.angle);pcx.stroke()});}
+  else if(currentParticleType==='star'){particles.forEach(s=>{const o=.3+.5*Math.sin(pFrame*s.speed+s.phase);pcx.beginPath();pcx.arc(s.x,s.y,s.r,0,7);pcx.fillStyle=`rgba(180,220,255,${o})`;pcx.fill()});}
+  else if(currentParticleType==='nebula'){particles.forEach(n=>{const o=.05+.03*Math.sin(pFrame*.01+n.phase);const g=pcx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);g.addColorStop(0,`hsla(${n.hue},80%,60%,${o})`);g.addColorStop(1,'transparent');pcx.fillStyle=g;pcx.fillRect(n.x-n.r,n.y-n.r,n.r*2,n.r*2)});}
+  else if(currentParticleType==='aurora'){particles.forEach((a,i)=>{pcx.beginPath();for(let x=0;x<PW;x+=10){const y=PH*.15+i*30+Math.sin(x*.01+pFrame*.01*a.speed+a.offset)*a.amp;x===0?pcx.moveTo(x,y):pcx.lineTo(x,y)}pcx.strokeStyle=`hsla(${a.hue},80%,60%,.12)`;pcx.lineWidth=18;pcx.stroke()});}
+  else{particles.forEach(d=>{d.x+=d.vx;d.y+=d.vy;if(d.x<0)d.x=PW;if(d.x>PW)d.x=0;if(d.y<0)d.y=PH;if(d.y>PH)d.y=0;pcx.beginPath();pcx.arc(d.x,d.y,d.r,0,7);pcx.fillStyle=`rgba(200,180,150,${d.op})`;pcx.fill()});}
+  requestAnimationFrame(drawParticles);
+}
+requestAnimationFrame(drawParticles);
+window.addEventListener('mousemove',e=>{const relX=(e.clientX/window.innerWidth-.5)*14;const relY=(e.clientY/window.innerHeight-.5)*14;sceneBgEl.style.transform=`translate(${relX}px,${relY}px) scale(1.08)`});
+function applySceneVisuals(id){const v=SCENE_VISUALS[id]||SCENE_VISUALS[1];sceneBgEl.style.background=v.grad;sceneBgEl.classList.add('show');seedParticles(v.particle)}
+
+/* FX helpers */
+function fxFlash(){const el=document.getElementById('fx-flash');el.classList.remove('fx-flash-play');void el.offsetWidth;el.classList.add('fx-flash-play')}
+function fxShake(target){const el=target||document.getElementById('cockpit');el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')}
+function fxWarpStreak(){const el=document.getElementById('warp-streak');el.classList.remove('warp-streak-play');void el.offsetWidth;el.classList.add('warp-streak-play')}
+
+/* WARP INTRO / LOADING */
+const loadMsgs=['กำลังเชื่อมต่อระบบเฝ้าระวังภูมิอากาศ…','กำลังดึงข้อมูลดาวเทียมล่าสุด…','กำลังประมวลผลแบบจำลองสภาพอากาศ…','เตรียมเปิดบันทึกภารกิจ…'];
+let loadPct=0;
+const loadInterval=setInterval(()=>{
+  loadPct+=Math.random()*18+8;
+  if(loadPct>=100){loadPct=100;clearInterval(loadInterval)}
+  document.getElementById('warp-loadfill').style.width=loadPct+'%';
+  document.getElementById("warp-text-el").textContent=loadMsgs[Math.min(loadMsgs.length-1,Math.floor(loadPct/26))];
+},220);
+setTimeout(()=>{const w=document.getElementById('warp');w.style.transition='opacity .8s';w.style.opacity='0';setTimeout(()=>{w.style.display='none';show('intro-screen');renderHistoryPanel()},800)},2400);
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+  document.getElementById('top-hud').classList.toggle('show', id==='game-screen');
+  if(id!=='game-screen'){sceneBgEl.classList.remove('show')}
+}
+
+/* ══════════════════════════════════════════════════════════
+   SCENES — 16 stages
+   ตอนที่ 1 (1-3): จุดเริ่มต้นของจุดจบ · ตอนที่ 2 (4-8): ภารกิจออกจากโลก
+   ตอนที่ 3 (9-12): โลกใบใหม่ · ตอนที่ 4 (13-15): ทางเลือกสุดท้ายของมนุษย์
+   ข้อ 16: คำถามพิเศษหลังย้อนเวลากลับมาปัจจุบัน
+   ══════════════════════════════════════════════════════════ */
+const SCENES=[
+{id:1,icon:'🌡️',badge:'ACT I · 01',loc:'โลก · ปี ค.ศ. 20XX',title:'ปีที่โลกเริ่มร้อนขึ้น',
+  story:'ปี ค.ศ. 20XX มนุษย์ใช้พลังงานจากโรงงาน รถยนต์ และเครื่องจักรเพิ่มขึ้นอย่างต่อเนื่อง ส่งผลให้ก๊าซเรือนกระจกสะสมในชั้นบรรยากาศ อุณหภูมิโลกจึงสูงขึ้นเรื่อย ๆ คุณคิดว่ามนุษย์ควรทำอย่างไรเพื่อชะลอปัญหานี้?',
+  climate:'ก๊าซเรือนกระจกจากการเผาไหม้เชื้อเพลิงฟอสซิลคือสาเหตุหลักที่ทำให้อุณหภูมิเฉลี่ยของโลกสูงขึ้นต่อเนื่องมานานหลายทศวรรษ',
+  choices:[
+    {t:'ลดการใช้เชื้อเพลิงฟอสซิลและหันมาใช้พลังงานสะอาด',sc:{survival:1,empathy:1,wisdom:3,courage:1}},
+    {t:'ใช้เชื้อเพลิงให้มากขึ้นเพื่อพัฒนาเศรษฐกิจ',sc:{survival:2,empathy:0,wisdom:0,courage:1}},
+    {t:'ไม่ต้องทำอะไร เพราะธรรมชาติจะปรับตัวเอง',sc:{survival:0,empathy:0,wisdom:0,courage:0}}
+  ]},
+{id:2,icon:'🌪️',badge:'ACT I · 02',loc:'โลก · หลายปีต่อมา',title:'ธรรมชาติเริ่มตอบกลับ',
+  story:'เวลาผ่านไปหลายปี อุณหภูมิยังคงสูงขึ้น ป่าไม้ถูกตัดเพื่อสร้างเมืองและโรงงาน พื้นที่ธรรมชาติลดลง ขณะที่คลื่นความร้อน น้ำท่วม และพายุรุนแรงเกิดบ่อยขึ้น เมื่อเห็นสถานการณ์นี้ คุณจะเลือกทำอย่างไร?',
+  climate:'การตัดไม้ทำลายป่าเพื่อขยายเมืองทำให้โลกสูญเสียแหล่งดูดซับคาร์บอนตามธรรมชาติ ซ้ำเติมความแปรปรวนของสภาพอากาศ',
+  choices:[
+    {t:'ช่วยลดการทำลายป่าและใช้ทรัพยากรอย่างประหยัด',sc:{survival:1,empathy:2,wisdom:2,courage:1}},
+    {t:'สนับสนุนการสร้างเมืองและโรงงานเพิ่มขึ้นเพื่อความเจริญ',sc:{survival:1,empathy:0,wisdom:0,courage:1}},
+    {t:'คิดว่าเป็นปัญหาของรัฐบาลและไม่จำเป็นต้องทำอะไร',sc:{survival:0,empathy:0,wisdom:0,courage:0}}
+  ]},
+{id:3,icon:'🚀',badge:'ACT I · 03',loc:'โลก · วันอพยพ',title:'วันที่โลกเปลี่ยนไปตลอดกาล',
+  story:'อีกหลายสิบปีต่อมา มนุษย์ยังคงใช้ทรัพยากรจำนวนมหาศาล ขยะและมลพิษเพิ่มขึ้น ระบบนิเวศเสียสมดุล จนในที่สุดเกิดวิกฤตครั้งใหญ่ พื้นที่หลายแห่งไม่สามารถอยู่อาศัยได้อีกต่อไป นักวิทยาศาสตร์ประกาศว่า "โลกกำลังเข้าสู่จุดที่มนุษย์ไม่สามารถใช้ชีวิตแบบเดิมได้อีกแล้ว" รัฐบาลทั่วโลกจึงสร้างยานอวกาศเพื่ออพยพมนุษย์ไปยังดาวเคราะห์แห่งใหม่ และคุณ…ได้รับเลือกให้เป็นหนึ่งในผู้โดยสาร ก่อนออกจากโลก คุณจะเลือกนำอะไรติดตัวขึ้นยาน?',
+  climate:'เมื่อระบบนิเวศเสียสมดุลเกินจุดที่จะฟื้นตัวได้ พื้นที่ที่เคยอยู่อาศัยได้อาจกลายเป็นพื้นที่ที่มนุษย์ดำรงชีวิตต่อไปไม่ได้อีกเลย',
+  choices:[
+    {t:'อาหาร น้ำ และอุปกรณ์จำเป็น',sc:{survival:3,empathy:1,wisdom:2,courage:0}},
+    {t:'ของมีค่าและสิ่งของที่ชื่นชอบ',sc:{survival:0,empathy:0,wisdom:0,courage:1}},
+    {t:'เครื่องใช้ไฟฟ้าและอุปกรณ์เพื่อความบันเทิง',sc:{survival:0,empathy:0,wisdom:1,courage:0}}
+  ]},
+{id:4,icon:'⚡',badge:'ACT II · 04',loc:'ยานอวกาศ · นอกโลก',title:'ยานออกเดินทาง',
+  story:'คุณขึ้นยานพร้อมกับผู้รอดชีวิตอีกหลายคน ยานทะยานออกจากโลกที่กำลังเผชิญวิกฤต แต่ระบบแจ้งเตือนว่า พลังงานมีจำกัด คุณต้องตัดสินใจว่าจะจัดการพลังงานอย่างไร',
+  climate:'พลังงานคือทรัพยากรจำกัดเสมอ ไม่ว่าจะบนโลกหรือบนยานอวกาศ การใช้อย่างมีสติคือกุญแจของความอยู่รอดระยะยาว',
+  choices:[
+    {t:'ลดการใช้พลังงานที่ไม่จำเป็น',sc:{survival:2,empathy:1,wisdom:2,courage:0}},
+    {t:'เปิดระบบทุกอย่างเพื่อความสะดวกสบาย',sc:{survival:0,empathy:0,wisdom:0,courage:1}},
+    {t:'ใช้พลังงานเต็มที่เพื่อให้เดินทางเร็วขึ้น',sc:{survival:1,empathy:0,wisdom:0,courage:2}}
+  ]},
+{id:5,icon:'🔋',badge:'ACT II · 05',loc:'ยานอวกาศ · ระหว่างเดินทาง',title:'ปัญหาแรกของการเดินทาง',
+  story:'ผ่านไปหลายวัน ระบบพลังงานของยานลดลงเร็วกว่าที่คาด เพราะผู้โดยสารใช้ไฟฟ้าเกินความจำเป็น คุณจึงเสนอให้ทุกคนช่วยกันลดการใช้พลังงาน คุณจะเลือกวิธีใด?',
+  climate:'การใช้พลังงานเกินความจำเป็นแม้เพียงเล็กน้อยจากคนจำนวนมาก สามารถสะสมกลายเป็นวิกฤตใหญ่ได้เสมอ',
+  choices:[
+    {t:'ปิดระบบที่ไม่จำเป็นและใช้พลังงานเท่าที่จำเป็น',sc:{survival:2,empathy:1,wisdom:2,courage:0}},
+    {t:'ให้ทุกคนใช้ไฟฟ้าได้ตามปกติ',sc:{survival:0,empathy:0,wisdom:0,courage:0}},
+    {t:'ปิดระบบทั้งหมดเพื่อประหยัดพลังงาน',sc:{survival:1,empathy:0,wisdom:0,courage:2}}
+  ]},
+{id:6,icon:'🍽️',badge:'ACT II · 06',loc:'ยานอวกาศ · คลังเสบียง',title:'อาหารเริ่มไม่พอ',
+  story:'การเดินทางใช้เวลานานกว่ากำหนด เนื่องจากยานต้องหลบพายุอวกาศ อาหารที่เตรียมไว้จึงเริ่มลดลงอย่างรวดเร็ว คุณจะจัดการอาหารที่เหลืออย่างไร?',
+  climate:'ความมั่นคงทางอาหารขึ้นอยู่กับการจัดสรรทรัพยากรอย่างเป็นธรรม ไม่ใช่การแก่งแย่งของใครที่แข็งแรงกว่า',
+  choices:[
+    {t:'แบ่งอาหารให้เหมาะสมกับจำนวนคนและระยะเวลาที่เหลือ',sc:{survival:2,empathy:3,wisdom:2,courage:0}},
+    {t:'ให้แต่ละคนกินตามที่ต้องการ',sc:{survival:0,empathy:0,wisdom:0,courage:0}},
+    {t:'ให้คนที่แข็งแรงที่สุดได้รับอาหารมากกว่า',sc:{survival:2,empathy:0,wisdom:0,courage:1}}
+  ]},
+{id:7,icon:'💧',badge:'ACT II · 07',loc:'ยานอวกาศ · ระบบน้ำ',title:'น้ำกำลังจะหมด',
+  story:'หลังจากเดินทางต่ออีกหลายวัน ระบบแจ้งเตือนว่า น้ำเหลือเพียง 40% ทุกคนเริ่มกังวล เพราะไม่รู้ว่าจะต้องเดินทางอีกนานแค่ไหน คุณจะเสนอวิธีแก้ปัญหาอย่างไร?',
+  climate:'น้ำจืดเป็นทรัพยากรที่มีจำกัดกว่าที่คิด การนำกลับมาใช้ใหม่คือหนึ่งในวิธีสำคัญที่สุดของการอยู่รอด',
+  choices:[
+    {t:'จำกัดการใช้น้ำและนำน้ำกลับมาใช้ใหม่',sc:{survival:2,empathy:1,wisdom:3,courage:0}},
+    {t:'ใช้น้ำตามปกติแล้วค่อยหาทางแก้',sc:{survival:0,empathy:0,wisdom:0,courage:0}},
+    {t:'ทิ้งน้ำที่ใช้แล้วเพื่อป้องกันการปนเปื้อน',sc:{survival:0,empathy:0,wisdom:0,courage:1}}
+  ]},
+{id:8,icon:'🪐',badge:'ACT II · 08',loc:'ยานอวกาศ · ระบบสำรวจ',title:'พบดาวเคราะห์เป้าหมาย',
+  story:'ในที่สุดระบบสำรวจพบดาวเคราะห์ดวงหนึ่งที่อาจเหมาะสำหรับการอยู่อาศัย แต่ข้อมูลยังไม่เพียงพอ คุณจะตัดสินใจอย่างไร?',
+  climate:'การตัดสินใจโดยไม่มีข้อมูลเพียงพอ มักนำไปสู่ความเสียหายที่ป้องกันได้ ทั้งต่อชีวิตและสิ่งแวดล้อม',
+  choices:[
+    {t:'สำรวจสภาพแวดล้อมก่อนนำคนลงไป',sc:{survival:2,empathy:1,wisdom:3,courage:1}},
+    {t:'ลงจอดทันทีเพราะทรัพยากรในยานกำลังหมด',sc:{survival:1,empathy:0,wisdom:0,courage:2}},
+    {t:'ส่งคนลงไปสำรวจโดยไม่มีอุปกรณ์ป้องกัน',sc:{survival:0,empathy:0,wisdom:0,courage:2}}
+  ]},
+{id:9,icon:'🏝️',badge:'ACT III · 09',loc:'ดาวเคราะห์ดวงใหม่ · จุดลงจอด',title:'มนุษย์พบที่อยู่ใหม่',
+  story:'ผลการสำรวจพบว่า ดาวเคราะห์แห่งนี้มีน้ำ มีอากาศที่สามารถปรับสภาพได้ และมีทรัพยากรบางส่วนที่มนุษย์สามารถนำมาใช้ได้ ทุกคนดีใจที่ในที่สุดก็มีโอกาสเริ่มต้นชีวิตใหม่ แต่คุณกลับนึกถึงสิ่งที่เกิดขึ้นกับโลก… คุณคิดว่าความผิดพลาดใดที่มนุษย์ไม่ควรทำซ้ำ?',
+  climate:'บทเรียนจากอดีตมีค่าก็ต่อเมื่อถูกนำไปใช้จริง ไม่ใช่แค่จดจำไว้เฉยๆ',
+  choices:[
+    {t:'ใช้ทรัพยากรโดยไม่คำนึงถึงผลกระทบ',sc:{survival:1,empathy:2,wisdom:3,courage:1}},
+    {t:'พัฒนาเทคโนโลยีและเมืองต่อไปโดยไม่ต้องกังวล',sc:{survival:1,empathy:0,wisdom:0,courage:1}},
+    {t:'ใช้ทรัพยากรให้มากที่สุดก่อนที่จะหมด',sc:{survival:1,empathy:0,wisdom:0,courage:1}}
+  ]},
+{id:10,icon:'🏗️',badge:'ACT III · 10',loc:'ดาวเคราะห์ดวงใหม่ · เมืองแรก',title:'การสร้างเมืองแห่งใหม่',
+  story:'มนุษย์เริ่มสร้างที่อยู่อาศัย เมือง และโรงงานบนดาวดวงใหม่ คุณได้รับหน้าที่วางแผนการใช้พลังงาน คุณจะเลือกแนวทางใด?',
+  climate:'พลังงานหมุนเวียนคือรากฐานของการพัฒนาที่ยั่งยืน ต่างจากเชื้อเพลิงที่ใช้แล้วหมดไปและทิ้งมลพิษไว้เบื้องหลัง',
+  choices:[
+    {t:'ใช้พลังงานหมุนเวียนและควบคุมการปล่อยมลพิษ',sc:{survival:2,empathy:1,wisdom:3,courage:1}},
+    {t:'ใช้เชื้อเพลิงที่หาได้ง่ายที่สุด',sc:{survival:1,empathy:0,wisdom:0,courage:0}},
+    {t:'ใช้ทรัพยากรทุกอย่างให้เต็มที่เพื่อสร้างเมืองให้เร็วที่สุด',sc:{survival:1,empathy:0,wisdom:0,courage:2}}
+  ]},
+{id:11,icon:'🗑️',badge:'ACT III · 11',loc:'ดาวเคราะห์ดวงใหม่ · เขตเมือง',title:'ขยะกำลังเพิ่มขึ้น',
+  story:'เวลาผ่านไป เมืองเติบโตขึ้น ผู้คนเริ่มมีสิ่งอำนวยความสะดวกมากขึ้น แต่ปริมาณขยะก็เพิ่มขึ้นเช่นกัน คุณเห็นภาพนี้แล้วนึกถึงโลกใบเก่าที่เคยเกิดปัญหาแบบเดียวกัน คุณจะทำอย่างไร?',
+  climate:'ปริมาณขยะที่เพิ่มขึ้นตามการเติบโตของเมือง คือสัญญาณเตือนแรกของระบบที่ไม่ยั่งยืน เช่นเดียวกับที่เคยเกิดขึ้นบนโลก',
+  choices:[
+    {t:'ลดขยะ คัดแยก และนำวัสดุกลับมาใช้ใหม่',sc:{survival:1,empathy:2,wisdom:3,courage:0}},
+    {t:'นำขยะไปทิ้งในพื้นที่ที่ไม่มีคนอาศัย',sc:{survival:0,empathy:0,wisdom:0,courage:1}},
+    {t:'สร้างพื้นที่ฝังกลบให้ใหญ่ขึ้นเรื่อย ๆ',sc:{survival:0,empathy:0,wisdom:0,courage:0}}
+  ]},
+{id:12,icon:'⚠️',badge:'ACT III · 12',loc:'ดาวเคราะห์ดวงใหม่ · หลายปีต่อมา',title:'ประวัติศาสตร์เริ่มซ้ำรอย',
+  story:'หลายปีผ่านไป เมืองขยายตัวอย่างรวดเร็ว การใช้ทรัพยากรเพิ่มขึ้น และเริ่มมีมลพิษเกิดขึ้น นักวิทยาศาสตร์เตือนว่า "ถ้ามนุษย์ยังใช้ทรัพยากรแบบเดิม ดาวดวงนี้อาจมีชะตาไม่ต่างจากโลก" คุณจะเลือกทำอย่างไร?',
+  climate:'ประวัติศาสตร์มักซ้ำรอยเมื่อมนุษย์ลืมบทเรียนของตัวเอง ไม่ว่าจะอยู่บนดาวดวงไหนก็ตาม',
+  choices:[
+    {t:'เปลี่ยนวิธีใช้ทรัพยากรและกำหนดขอบเขตการใช้',sc:{survival:2,empathy:1,wisdom:3,courage:1}},
+    {t:'เดินหน้าพัฒนาต่อไปก่อน แล้วค่อยแก้ปัญหาทีหลัง',sc:{survival:1,empathy:0,wisdom:0,courage:0}},
+    {t:'เตรียมสร้างยานเพื่อหาดาวดวงใหม่อีกครั้ง',sc:{survival:1,empathy:0,wisdom:1,courage:2}}
+  ]},
+{id:13,icon:'🎤',badge:'ACT IV · 13',loc:'ดาวเคราะห์ดวงใหม่ · จัตุรัสกลางเมือง',title:'บทเรียนจากโลก',
+  story:'คุณได้รับมอบหมายให้พูดต่อหน้าคนทั้งเมืองว่า "เราหนีจากโลกมาได้ แต่เราไม่สามารถหนีจากพฤติกรรมของตัวเองได้" คุณจะเสนอแนวทางใดให้กับมนุษย์?',
+  climate:'การหนีจากปัญหาไม่ใช่การแก้ปัญหา ตราบใดที่พฤติกรรมต้นเหตุยังไม่เปลี่ยนแปลง',
+  choices:[
+    {t:'พัฒนาโดยคำนึงถึงสิ่งแวดล้อมและคนรุ่นต่อไป',sc:{survival:1,empathy:3,wisdom:3,courage:1}},
+    {t:'พัฒนาให้เร็วที่สุดโดยไม่ต้องสนใจผลกระทบ',sc:{survival:1,empathy:0,wisdom:0,courage:1}},
+    {t:'หากเกิดปัญหาก็ค่อยย้ายไปดาวดวงอื่น',sc:{survival:1,empathy:0,wisdom:0,courage:1}}
+  ]},
+{id:14,icon:'📜',badge:'ACT IV · 14',loc:'ดาวเคราะห์ดวงใหม่ · สภาอารยธรรมใหม่',title:'โอกาสครั้งที่สอง',
+  story:'ทุกคนเริ่มเข้าใจว่า การอพยพออกจากโลกไม่ได้แก้ปัญหาที่ต้นเหตุ แต่สิ่งสำคัญคือการเปลี่ยนพฤติกรรมของมนุษย์ คุณได้รับสิทธิ์เสนอ กฎข้อแรกของอารยธรรมใหม่ คุณจะเลือกข้อใด?',
+  climate:'กฎและนโยบายที่คำนึงถึงสิ่งแวดล้อมตั้งแต่วันแรก ป้องกันวิกฤตได้ดีกว่าการแก้ไขในภายหลังเสมอ',
+  choices:[
+    {t:'ทุกการพัฒนาต้องคำนึงถึงผลกระทบต่อสิ่งแวดล้อม',sc:{survival:1,empathy:2,wisdom:3,courage:1}},
+    {t:'การพัฒนาและความสะดวกสบายต้องมาก่อน',sc:{survival:1,empathy:0,wisdom:0,courage:1}},
+    {t:'ใครใช้ทรัพยากรได้มากที่สุดก็มีสิทธิ์ตัดสินใจมากที่สุด',sc:{survival:1,empathy:0,wisdom:0,courage:2}}
+  ]},
+{id:15,icon:'🌌',badge:'ACT IV · 15',loc:'ดาวเคราะห์ดวงใหม่ · อนาคตของมนุษยชาติ',title:'ทางเลือกของมนุษยชาติ',
+  story:'เวลาผ่านไปหลายปี ดาวเคราะห์ดวงใหม่กลายเป็นบ้านของมนุษย์ คุณยืนมองโลกใบใหม่และนึกถึงโลกใบเก่าที่มนุษย์เคยทำลายลงด้วยการกระทำของตัวเอง ครั้งนี้มนุษย์มีทางเลือก… คุณจะเลือกอนาคตแบบไหนให้กับมนุษยชาติ?',
+  climate:'อนาคตของอารยธรรมไม่ได้ถูกกำหนดไว้ล่วงหน้า แต่ถูกเลือกจากการกระทำของทุกคนในทุกวัน',
+  choices:[
+    {t:'🌱 อยู่ร่วมกับธรรมชาติ ใช้ทรัพยากรอย่างยั่งยืน และไม่ทำผิดซ้ำกับโลกใบเดิม',sc:{survival:1,empathy:3,wisdom:3,courage:1}},
+    {t:'🏭 เร่งพัฒนาเทคโนโลยีและอุตสาหกรรมเพื่อความก้าวหน้า',sc:{survival:2,empathy:0,wisdom:0,courage:2}},
+    {t:'🚀 หาดาวดวงใหม่ไว้ล่วงหน้า หากดาวดวงนี้เริ่มมีปัญหา',sc:{survival:1,empathy:0,wisdom:1,courage:2}}
+  ]},
+{id:16,icon:'⏳',badge:'EPILOGUE · SPECIAL',loc:'ปัจจุบัน · หลังการย้อนเวลา',title:'ถ้าย้อนกลับมาที่วันนี้',
+  story:'หลังจากที่คุณได้เห็นจุดจบของโลก และได้เรียนรู้ว่าการกระทำเล็ก ๆ ของมนุษย์ในวันนี้สามารถสะสมจนกลายเป็นปัญหาใหญ่ในอนาคตได้… ถ้าคุณรู้แล้วว่าโลกอาจมีจุดจบแบบนั้น วันนี้คุณจะเริ่มทำอะไร?',
+  climate:'การเปลี่ยนแปลงระดับโลกเริ่มต้นจากการกระทำเล็กๆ ของแต่ละคนในชีวิตประจำวัน สะสมไปพร้อมกันนับล้านคน',
+  choices:[
+    {t:'🌱 ลดผลกระทบต่อสิ่งแวดล้อม — ลดการใช้พลาสติกแบบใช้ครั้งเดียว แยกขยะ ใช้ถุงผ้า พกแก้วน้ำ และเลือกใช้สิ่งของที่นำกลับมาใช้ซ้ำได้',sc:{survival:1,empathy:2,wisdom:2,courage:1}},
+    {t:'💡 ประหยัดพลังงานและทรัพยากร — ปิดไฟและเครื่องใช้ไฟฟ้าเมื่อไม่ใช้งาน ปิดน้ำขณะแปรงฟัน ใช้น้ำอย่างประหยัด และเลือกใช้พลังงานเท่าที่จำเป็น',sc:{survival:2,empathy:1,wisdom:2,courage:1}},
+    {t:'🌳 เปลี่ยนพฤติกรรมในชีวิตประจำวัน — ลดการใช้รถส่วนตัวเมื่อสามารถเดินทางด้วยขนส่งสาธารณะหรือเดินได้ ปลูกต้นไม้ ลดการสร้างขยะ และชวนคนรอบตัวให้ช่วยกันดูแลโลก',sc:{survival:1,empathy:2,wisdom:1,courage:2}}
+  ]}
+];
+
+const PROFILES=[
+  {cond:s=>s.wisdom>=10&&s.courage<8,emoji:'🔭',name:'ดาว Sophia Luminis',sub:'ดาวแห่งปัญญาผู้ส่องสว่างในความมืด',trait:'ผู้แสวงหาความจริง · The Truth Seeker',color:'#00E5FF',desc:'คุณเป็นดุจ Sophia Luminis ในกาแล็กซี Andromeda — ดาวที่โคจรช้าและเงียบงัน แต่ส่องแสงสม่ำเสมอมาหลายพันล้านปีโดยไม่สั่นไหว คุณไม่รีบร้อน ไม่ตื่นตระหนก แต่เรียนรู้จากทุกสิ่งที่พบเจอ ปัญญาของคุณคือสิ่งที่อารยธรรมใหม่ต้องการมากที่สุด',heal:'ในโลกที่เต็มไปด้วยเสียงดังและข่าวร้าย คนที่รู้จักหยุดคิดก่อนตัดสินใจคือผู้กอบกู้อนาคต ความรู้ที่คุณสั่งสมไม่เคยสูญเปล่า — บางครั้งเพียงแค่รอเวลาที่ถูกต้องในการส่องแสง'},
+  {cond:s=>s.empathy>=10&&s.survival<8,emoji:'💫',name:'ดาว Compassia Nova',sub:'ดาวแห่งความเมตตาที่เกิดใหม่จากซากซูเปอร์โนวา',trait:'ผู้รักษาและเชื่อมต่อ · The Cosmic Healer',color:'#FF80AB',desc:'คุณเป็นดุจ Compassia Nova — ดาวที่เกิดจากการระเบิดของดาวเก่า อบอุ่น นุ่มนวล และส่องแสงที่โอบล้อมทุกคนรอบข้าง คุณเชื่อว่าความเชื่อมโยงระหว่างสรรพสิ่งสำคัญกว่าการอยู่รอดของคนเพียงคนเดียว และนั่นคือหัวใจของอารยธรรมที่ยั่งยืน',heal:'หัวใจที่รู้จักเจ็บปวดแทนผู้อื่นไม่ใช่จุดอ่อน — แต่คือพลังที่ยิ่งใหญ่ที่สุดในจักรวาล คุณดูแลคนอื่นมาตลอด อย่าลืมดูแลตัวเองด้วยนะ เพราะโลกต้องการคุณที่มีพลังเต็ม'},
+  {cond:s=>s.courage>=10&&s.wisdom<8,emoji:'⚡',name:'ดาว Valoria Ignis',sub:'ดาวแห่งไฟที่ลุกโชนสู่ความยิ่งใหญ่',trait:'นักสู้แห่งจักรวาล · The Cosmic Warrior',color:'#FF6E40',desc:'คุณเป็นดุจ Valoria Ignis — ดาวมวลสูงที่ลุกโชนร้อนแรง มีอายุไม่ยาว แต่ในช่วงชีวิตสั้นๆ ส่องสว่างกว่าดาวอื่นนับพัน คุณกล้าเผชิญสิ่งที่คนอื่นวิ่งหนี และความกล้าของคุณคือประกายที่จุดชนวนการเปลี่ยนแปลงที่โลกต้องการ',heal:'ความกล้าหาญแท้จริงไม่ได้หมายความว่าไม่กลัว แต่คือการเดินหน้าต่อไปแม้จะกลัว คุณไม่จำเป็นต้องสู้คนเดียวทุกครั้ง — บางทีการขอความช่วยเหลือก็คือความกล้าหาญที่ยิ่งใหญ่กว่า'},
+  {cond:s=>s.survival>=10&&s.empathy<7,emoji:'🔵',name:'ดาว Resilius Prime',sub:'ดาวแคระขาวที่รอดมาได้จากทุกสิ่ง',trait:'ผู้รอดชีวิต · The Eternal Survivor',color:'#82B1FF',desc:'คุณเป็นดุจ Resilius Prime — ดาวแคระขาวที่ผ่านมาแล้วทุกวิกฤต อัดแน่น แข็งแกร่ง และจะส่องแสงอีกหลายพันล้านปีหลังดาวอื่นดับไปหมดแล้ว คุณเชื่อว่าต้องอยู่รอดก่อน จึงจะช่วยเหลือคนอื่นได้ และนั่นไม่ใช่ความเห็นแก่ตัว แต่คือความรับผิดชอบต่ออนาคต',heal:'การเลือกตัวเองบางครั้งก็จำเป็นและถูกต้อง คุณไม่ต้องรู้สึกผิดกับมัน ดาวที่ยังสว่างอยู่เท่านั้นที่จะส่องทางให้คนอื่นได้ — ดูแลตัวเองต่อไปนะ'},
+  {cond:s=>s.wisdom>=8&&s.empathy>=8,emoji:'🌌',name:'ดาว Equilibra Cosmos',sub:'ดาวแห่งสมดุลที่หายากที่สุดในจักรวาล',trait:'ผู้รักษาสมดุล · The Cosmic Balancer',color:'#B39DDB',desc:'คุณเป็นดุจ Equilibra Cosmos — ดาวที่หายากที่สุดในจักรวาล ผสมผสานระหว่างปัญญาและความเมตตาในสัดส่วนที่สมบูรณ์แบบ คุณไม่โดดเด่นสุดขั้วด้านใดด้านหนึ่ง แต่คุณเป็นแกนกลางที่ระบบสุริยะต้องพึ่งพา',heal:'ไม่จำเป็นต้องสว่างที่สุดเสมอ บางครั้งดาวที่สมดุลที่สุดคือสิ่งที่จักรวาลต้องการมากกว่า คุณมีคุณค่ามากกว่าที่คิด — เพียงแค่เป็นตัวเองก็เพียงพอแล้ว'},
+  {cond:s=>s.courage>=8&&s.empathy>=8,emoji:'🌟',name:'ดาว Aurora Spiritus',sub:'ดาวแห่งแสงเหนือที่ส่องสว่างทุกคืนอันมืดมิด',trait:'นักสู้ผู้มีหัวใจ · The Compassionate Warrior',color:'#69F0AE',desc:'คุณเป็นดุจ Aurora Spiritus — ดาวที่ส่องแสงสีสันงดงามเหมือนแสงเหนือ คุณกล้าต่อสู้แต่ไม่เคยทิ้งใครไว้ข้างหลัง ใจร้อนแต่มีหัวใจ พร้อมเสี่ยงเพื่อผู้อื่น นี่คือผู้นำที่จักรวาลต้องการในยามวิกฤต',heal:'คุณพิสูจน์ว่าความกล้าและความเมตตาไม่ได้ขัดแย้งกัน แต่เสริมกัน โลกต้องการคนอย่างคุณมากกว่าที่คิด อย่าหยุดเป็นตัวเอง'},
+  {cond:s=>true,emoji:'✨',name:'ดาว Nebula Vitae',sub:'เนบิวลาแห่งชีวิตที่กำลังกลายเป็นดาวดวงใหม่',trait:'ผู้กำลังก่อร่าง · The Becoming Star',color:'#FFF59D',desc:'คุณเป็นดุจ Nebula Vitae — เมฆก๊าซและฝุ่นดาวที่กำลังรวมตัวกันเพื่อกลายเป็นดาวดวงใหม่ คุณยังอยู่ในช่วงการค้นหาตัวเอง แต่ในความไม่แน่ใจนั้นมีพลังงานมหาศาลที่รอการปลดปล่อย คุณคือความเป็นไปได้ที่ยังไม่ถูกกำหนด',heal:'การยังไม่รู้ว่าตัวเองเป็นใครไม่ใช่จุดอ่อน — มันคือเสรีภาพ คุณยังมีเวลาและพื้นที่เพียงพอที่จะเป็นสิ่งที่ยิ่งใหญ่กว่าที่จินตนาการได้ตอนนี้'}
+];
+
+/* NARRATIVE BRANCHING — story flags (short 1-2 sentence callbacks) */
+let storyFlags={};
+let choiceHistory=[];
+function resetStory(){storyFlags={};choiceHistory=[]}
+
+const FLAG_EFFECTS={};
+
+function contextIntro(sceneId){
+  const act1Tag='📡 ระบบเฝ้าระวังภูมิอากาศโลก';
+  const act2Tag='📡 ระบบยานอวกาศ';
+  const act3Tag='📡 ระบบเมืองใหม่ · Nova Terra';
+  const act4Tag='📡 บันทึกอารยธรรมใหม่';
+  const specialTag='📡 ความทรงจำจากอดีต';
+  const tag=sceneId<=3?act1Tag:sceneId<=8?act2Tag:sceneId<=12?act3Tag:sceneId<=15?act4Tag:specialTag;
+  const prev=choiceHistory[choiceHistory.length-1];
+  if(!prev) return {tag,lines:[]};
+  const line=`ก่อนหน้านี้คุณเลือกที่จะ "${prev.t}" — ผลของการตัดสินใจนั้นยังคงติดตามคุณมาถึงตอนนี้`;
+  return {tag,lines:[line]};
+}
+
+function buildLegacySummary(){
+  const entries=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+  const top=entries[0][0];
+  const statText={
+    survival:'คุณให้ความสำคัญกับการอยู่รอดและการวางแผนอย่างรัดกุมในทุกวิกฤต',
+    empathy:'คุณให้คุณค่ากับชีวิตและความรู้สึกของผู้อื่นเสมอ แม้ในสถานการณ์ที่ยากลำบากที่สุด',
+    wisdom:'คุณเลือกใช้ปัญญาและข้อมูลนำทางการตัดสินใจ มากกว่าจะทำตามอารมณ์ชั่ววูบ',
+    courage:'คุณกล้าตัดสินใจและลงมือทำ แม้ต้องแบกรับความเสี่ยงด้วยตัวเอง'
+  };
+  return statText[top]+' เรื่องราวของคุณกลายเป็นบทเรียนสำคัญให้อารยธรรมใหม่ได้เรียนรู้และไม่ทำผิดซ้ำรอยเดิม';
+}
+
+/* PROGRESS SHARE + SHARE HELPERS */
+function shareLink(){return (window.location.href&&window.location.href.split('#')[0])||'เปิดไฟล์เกมนี้เพื่อเล่น: The Last Human.html'}
+async function shareTextGeneric(text,title){
+  Audio1.click();
+  if(navigator.share){try{await navigator.share({title,text});showFriendInviteToast();return}catch(e){}}
+  try{await navigator.clipboard.writeText(text);alert('คัดลอกข้อความสำหรับแชร์แล้ว ✅');showFriendInviteToast()}
+  catch(e){prompt('คัดลอกข้อความนี้เพื่อแชร์:',text);showFriendInviteToast()}
+}
+function shareGameOnly(){
+  const text=`มาร่วมภารกิจ "มนุษย์คนสุดท้าย · The Last Human" กับฉันสิ! คุณจะพามนุษยชาติไปถึง Nova Terra ได้หรือไม่? เล่นได้ที่: ${shareLink()}`;
+  shareTextGeneric(text,'มนุษย์คนสุดท้าย · The Last Human');
+}
+
+/* ARRIVAL SEQUENCE */
+const AI_LINES=[
+  {tag:'ระบบเฝ้าระวังดาวเคราะห์ใหม่',text:'ดาวเคราะห์ <strong>Nova Terra</strong> มีองค์ประกอบของบรรยากาศใกล้เคียงโลกถึง 97.8%'},
+  {tag:'ระบบเฝ้าระวังดาวเคราะห์ใหม่',text:'สามารถเริ่มสร้างอารยธรรมใหม่ได้'},
+  {tag:'บันทึกส่วนตัว',text:'มนุษย์หนีออกจากโลกได้… แต่จะหนีผลของการกระทำตัวเองได้จริงหรือ?'},
+  {tag:'เสียงจากอดีต',text:'โลกไม่เคยต้องการมนุษย์ แต่มนุษย์ต้องการโลกเสมอ'},
+];
+const LANDING_LINE={tag:'บันทึกภารกิจ',text:'นี่คือโอกาสครั้งที่สองของมนุษยชาติ'};
+const CIV_CHOICES=[
+  {label:'สร้างอารยธรรมโดยใช้พลังงานสะอาด',tag:'clean_energy',resultName:'อารยธรรมพลังงานสะอาด'},
+  {label:'อนุรักษ์ธรรมชาติเป็นอันดับแรก',tag:'conservation',resultName:'อารยธรรมผู้พิทักษ์ธรรมชาติ'},
+  {label:'พัฒนาเทคโนโลยีควบคู่กับสิ่งแวดล้อม',tag:'balanced_tech',resultName:'อารยธรรมแห่งความสมดุล'},
+];
+let civilizationChoice=null;
+
+/* Star selection based on RELATIVE dominance of stats, not fixed absolute
+   thresholds. With 16 chapters, every stat naturally accumulates a fair
+   amount of points, so comparing against fixed numbers (e.g. "wisdom>=8")
+   made almost every playthrough land on the same easy-to-satisfy profile.
+   Instead we look at how each stat compares to the others *for this run*,
+   so the result actually reflects which choices the player leaned into. */
+function pickStarProfile(sc){
+  const find=name=>PROFILES.find(p=>p.name===name);
+  const entries=Object.entries(sc);
+  const total=entries.reduce((s,[,v])=>s+v,0)||1;
+  const sorted=[...entries].sort((a,b)=>b[1]-a[1]);
+  const [topKey,topVal]=sorted[0];
+  const [secKey,secVal]=sorted[1];
+  const [, fourthVal]=sorted[3];
+  const pureMap={wisdom:'ดาว Sophia Luminis',empathy:'ดาว Compassia Nova',courage:'ดาว Valoria Ignis',survival:'ดาว Resilius Prime'};
+  // All four stats close together -> still finding their identity
+  if((topVal-fourthVal)<=Math.max(3,total*0.12)) return find('ดาว Nebula Vitae');
+  // One stat clearly ahead of everything else -> pure archetype
+  if((topVal-secVal)>=Math.max(3,total*0.10)) return find(pureMap[topKey]);
+  // Two stats close together and both ahead of the rest -> combo archetype
+  const pair=[topKey,secKey].sort().join('-');
+  if(pair==='empathy-wisdom') return find('ดาว Equilibra Cosmos');
+  if(pair==='courage-empathy') return find('ดาว Aurora Spiritus');
+  // No dedicated combo lore for this pair -> fall back to the higher of the two
+  return find(pureMap[topKey]);
+}
+
+function showArrival(){
+  show('arrival-screen');
+  Audio1.chime();
+  sceneBgEl.style.background='radial-gradient(circle at 50% 15%,#4a3a1a,#0a1a2a 70%)';
+  sceneBgEl.classList.add('show');
+  seedParticles('aurora');
+  document.getElementById('top-hud').classList.remove('show');
+  const box=document.getElementById('arrival-ai-box');
+  box.innerHTML='';
+  const lines=AI_LINES.concat([{tag:'บันทึกภารกิจ · มรดกของการตัดสินใจ',text:buildLegacySummary()}]);
+  let i=0;
+  function nextLine(){
+    if(i>=lines.length){setTimeout(revealLanding,900);return}
+    const l=lines[i];
+    const el=document.createElement('div');el.className='ai-line';
+    el.innerHTML=`<span class="ai-tag">${l.tag}</span>${l.text}`;
+    box.innerHTML='';box.appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('show'));
+    Audio1.tone(720,.18,'sine',.08);
+    i++;
+    showTapContinue(nextLine);
+  }
+  nextLine();
+}
+function revealLanding(){
+  document.getElementById('arrival-screen').classList.add('landed');
+  document.querySelectorAll('#landing-visuals span').forEach((el,idx)=>{setTimeout(()=>{el.classList.add('show');Audio1.tone(500+idx*120,.2,'sine',.1)},idx*350)});
+  setTimeout(()=>{
+    const box=document.getElementById('arrival-ai-box');
+    const el=document.createElement('div');el.className='ai-line';
+    el.innerHTML=`<span class="ai-tag">${LANDING_LINE.tag}</span>${LANDING_LINE.text}`;
+    box.innerHTML='';box.appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('show'));
+    Audio1.chime();
+  },1600);
+  setTimeout(revealFinalChoice,3200);
+}
+function revealFinalChoice(){
+  const label=document.getElementById('final-choice-label');const wrap=document.getElementById('final-choices');
+  label.classList.add('show');
+  wrap.innerHTML=CIV_CHOICES.map((c,idx)=>`<button class="final-choice-btn" data-idx="${idx}">${['A','B','C'][idx]}. ${c.label}</button>`).join('');
+  wrap.classList.add('show');
+  wrap.querySelectorAll('.final-choice-btn').forEach(btn=>{
+    btn.addEventListener('mouseenter',()=>Audio1.hover());
+    btn.addEventListener('click',()=>{
+      Audio1.select();
+      wrap.querySelectorAll('.final-choice-btn').forEach(b=>b.disabled=true);
+      civilizationChoice=CIV_CHOICES[parseInt(btn.dataset.idx)];
+      revealClosing();
+    });
+  });
+}
+function revealClosing(){
+  const el=document.getElementById('closing-message');
+  el.textContent='"อนาคตของดาวดวงใหม่… ขึ้นอยู่กับการตัดสินใจของคุณ"';
+  el.classList.add('show');
+  fxFlash();
+  showTapContinue(finishGame);
+}
+
+/* STATE + core game flow */
+let cur=0;
+let sc={survival:0,empathy:0,wisdom:0,courage:0};
+let gameStartTime=0,elapsedTimer=null;
+const STAT_META={survival:{icon:'🛡',name:'การเอาตัวรอด'},empathy:{icon:'💚',name:'ความเห็นอกเห็นใจ'},wisdom:{icon:'🧠',name:'ปัญญา'},courage:{icon:'💪',name:'ความกล้า'}};
+
+function startGame(){
+  Audio1.init();Audio1.warp();fxWarpStreak();
+  cur=0;sc={survival:0,empathy:0,wisdom:0,courage:0};
+  civilizationChoice=null;resetStory();
+  gameStartTime=Date.now();
+  show('game-screen');renderHUD();renderProgress();renderScene();
+  if(elapsedTimer)clearInterval(elapsedTimer);
+  elapsedTimer=setInterval(updateElapsed,1000);
+}
+function renderHUD(){
+  const wrap=document.getElementById('hud-stats');
+  wrap.innerHTML=Object.entries(sc).map(([k,v])=>{const m=STAT_META[k];return `<div class="hud-pill" id="hud-${k}">${m.icon} <b id="hud-val-${k}">${v}</b></div>`}).join('');
+}
+function animateNumber(el,from,to){const dur=500,start=performance.now();function step(now){const p=Math.min(1,(now-start)/dur);el.textContent=Math.round(from+(to-from)*p);if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)}
+function pulseHudStat(key){const pill=document.getElementById('hud-'+key);if(!pill)return;pill.classList.add('pulse');setTimeout(()=>pill.classList.remove('pulse'),700)}
+function renderProgress(){
+  const pct=(cur/SCENES.length)*100;
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=`ด่าน ${cur+1} / ${SCENES.length}`;
+  document.getElementById('prog-pct').textContent=Math.round(pct)+'%';
+  const dots=document.getElementById('dots');dots.innerHTML='';
+  for(let i=0;i<SCENES.length;i++){const d=document.createElement('div');d.className='dot'+(i<cur?' done':i===cur?' active':'');dots.appendChild(d)}
+}
+function fmtTime(sec){const m=Math.floor(sec/60),s=Math.floor(sec%60);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function updateElapsed(){const el=document.getElementById('prog-elapsed');if(!el)return;const sec=(Date.now()-gameStartTime)/1000;el.textContent='⏱ '+fmtTime(sec)}
+
+function renderScene(){
+  const s=SCENES[cur];
+  applySceneVisuals(s.id);
+  const ctx=contextIntro(s.id);
+  const memoryHtml=ctx.lines.length?`<div class="memory-box"><span class="memory-tag">${ctx.tag}</span><p>${ctx.lines.join(' ')}</p></div>`:'';
+  const ci=document.getElementById('cockpit-inner');
+  ci.innerHTML=`
+    <div class="scene-eyebrow">
+      <div class="scene-badge">${s.badge}</div>
+      <div class="scene-sep"></div>
+      <div class="scene-num">[ ${String(s.id).padStart(2,'0')} / ${SCENES.length} ]</div>
+    </div>
+    <div class="scene-head">
+      <div class="scene-icon-wrap">${s.icon}</div>
+      <div class="scene-title-block"><div class="scene-loc">${s.loc}</div><h2>${s.title}</h2></div>
+    </div>
+    <p class="scene-narrative">${s.story}</p>
+    ${memoryHtml}
+    <div class="climate-box"><span class="climate-tag">⚠ สัญญาณโลกร้อน</span><p>${s.climate}</p></div>
+    <div class="choices-label">— เลือกการกระทำของคุณ —</div>
+    <div class="choices">
+      ${s.choices.map((c,i)=>`<button class="choice" data-idx="${i}"><span class="choice-key">${['A','B','C'][i]}</span><span>${c.t}</span></button>`).join('')}
+    </div>
+  `;
+  ci.querySelectorAll('.choice').forEach(btn=>{
+    btn.addEventListener('mouseenter',()=>Audio1.hover());
+    btn.addEventListener('click',(e)=>{Audio1.select();spawnRipple(e,btn);choose(parseInt(btn.dataset.idx))});
+  });
+  if([2,7,9,12].includes(s.id))Audio1.warning();
+
+  const cockpit=document.getElementById('cockpit');
+  cockpit.style.opacity='0';cockpit.style.transform='translateY(16px) scale(.98)';cockpit.style.transition='none';
+  requestAnimationFrame(()=>{cockpit.style.transition='all .5s cubic-bezier(.4,0,.2,1)';cockpit.style.opacity='1';cockpit.style.transform='translateY(0) scale(1)'});
+}
+function spawnRipple(e,btn){
+  const r=document.createElement('span');r.className='ripple-dot';
+  const rect=btn.getBoundingClientRect();
+  r.style.left=(e.clientX-rect.left-10)+'px';r.style.top=(e.clientY-rect.top-10)+'px';r.style.width=r.style.height='20px';
+  btn.classList.add('ripple');btn.appendChild(r);setTimeout(()=>r.remove(),650);
+}
+function choose(idx){
+  const sceneId=SCENES[cur].id;
+  const chosen=SCENES[cur].choices[idx];
+  const before={...sc};
+  for(const[k,v] of Object.entries(chosen.sc)){sc[k]=(sc[k]||0)+v}
+  Object.keys(chosen.sc).forEach(k=>{if(chosen.sc[k]>0){const el=document.getElementById('hud-val-'+k);if(el)animateNumber(el,before[k],sc[k]);pulseHudStat(k)}});
+  choiceHistory.push({id:sceneId,idx,t:chosen.t});
+  const effectFn=(FLAG_EFFECTS[sceneId]||[])[idx];
+  if(effectFn)effectFn(storyFlags);
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  fxFlash();
+  if(chosen.sc.courage>=3)fxShake();
+  cur++;
+  setTimeout(()=>{
+    if(cur>=SCENES.length){if(elapsedTimer)clearInterval(elapsedTimer);showArrival();return}
+    if(sceneId===15){playBlackHoleSequence();return}
+    Audio1.warp();fxWarpStreak();renderProgress();renderScene();
+  },380);
+}
+function showTapContinue(next){
+  const ov=document.getElementById('tap-continue-overlay');
+  if(!ov){next();return}
+  ov.classList.add('show');
+  const handler=(e)=>{
+    ov.classList.remove('show');
+    ov.removeEventListener('click',handler);
+    next();
+  };
+  ov.addEventListener('click',handler);
+}
+function finishGame(){Audio1.gameOver();showResult()}
+
+/* BLACK HOLE SEQUENCE — plays after scene 15, before the final special question (16) */
+function playBlackHoleSequence(){
+  document.getElementById('top-hud').classList.remove('show');
+  show('blackhole-screen');
+  const bh=document.getElementById('blackhole-screen');
+  const wrap=document.getElementById('bh-vortex-wrap');
+  wrap.innerHTML=`
+    <div class="bh-ring r3"></div>
+    <div class="bh-ring r2"></div>
+    <div class="bh-ring r1"></div>
+    <div class="bh-hole"></div>
+  `;
+  Audio1.warp();fxWarpStreak();
+  setTimeout(()=>fxShake(bh),300);
+  setTimeout(()=>fxShake(bh),900);
+  setTimeout(()=>{fxFlash();fxShake(bh)},2000);
+  setTimeout(()=>{
+    showBlackHoleMessage('คุณถูกดูดเข้าไปในหลุมดำ<br>และย้อนเวลากลับมาปัจจุบัน',()=>{
+      showBlackHoleMessage('คุณได้รับโอกาสครั้งที่ 2',()=>{
+        show('game-screen');
+        Audio1.warp();fxWarpStreak();renderProgress();renderScene();
+      });
+    });
+  },2400);
+}
+function showBlackHoleMessage(html,next){
+  const wrap=document.getElementById('bh-vortex-wrap');
+  wrap.innerHTML=`<div class="bh-message">${html}</div>`;
+  showTapContinue(next);
+}
+
+let currentShareProfile=null;
+
+function showResult(){
+  show('result-screen');
+  const profile=pickStarProfile(sc);
+  const maxStat=Object.entries(sc).sort((a,b)=>b[1]-a[1])[0];
+  const statNames={survival:'การอยู่รอด',empathy:'ความเมตตา',wisdom:'ปัญญา',courage:'ความกล้า'};
+  const statIcons={survival:'🛡️',empathy:'💙',wisdom:'🧠',courage:'⚡'};
+  const unlocked=checkAchievements(sc);
+  const elapsedSec=gameStartTime?(Date.now()-gameStartTime)/1000:0;
+  const legacy=buildLegacySummary();
+  recordPlaythrough({date:new Date().toLocaleDateString('th-TH'),emoji:profile.emoji,name:profile.name,time:fmtTime(elapsedSec)});
+  const civLine=civilizationChoice?`<br><br>บนดาว Nova Terra คุณเลือกเส้นทาง <strong>${civilizationChoice.resultName}</strong> — "${civilizationChoice.label}"`:'';
+
+  document.getElementById('result-content').innerHTML=`
+    <div class="result-star-display">
+      <span class="result-star-emoji">${profile.emoji}</span>
+      <div class="result-const-label">การเดินทางของคุณเผยให้เห็นว่าคุณคือ</div>
+      <div class="result-star-name">${profile.name}</div>
+      <div class="result-star-sub">${profile.sub}</div>
+    </div>
+    <div class="score-row">${Object.entries(sc).map(([k,v])=>`<div class="score-chip">${statIcons[k]} ${statNames[k]}<span>${v}</span></div>`).join('')}</div>
+    <canvas id="radar-canvas" width="280" height="280"></canvas>
+    <div class="result-card"><div class="result-card-label">✦ ${profile.trait}</div><p>${profile.desc}${civLine}</p></div>
+    <div class="result-card"><div class="result-card-label" style="color:var(--cyan)">✦ มรดกของการตัดสินใจ</div><p>${legacy}</p></div>
+    ${civilizationChoice?`<div class="result-card"><div class="result-card-label" style="color:#69F0AE">✦ เส้นทางอารยธรรม Nova Terra</div><p>${civilizationChoice.resultName}: "${civilizationChoice.label}"<br><br>นี่คือเมล็ดพันธุ์แรกของอารยธรรมใหม่ ทางเลือกวันนี้จะกำหนดว่า Nova Terra จะเดินตามรอยโลกเก่า หรือเรียนรู้จากมันได้ทันเวลา</p></div>`:''}
+    <div class="result-card"><div class="result-card-label" style="color:#00E676">✦ ข้อความถึงคุณ</div><div class="heal-box"><span class="heal-star">✨</span><p>${profile.heal}</p></div></div>
+    <div class="result-card">
+      <div class="result-card-label" style="color:var(--cyan)">✦ ความสำเร็จที่ปลดล็อก (${unlocked.length}/${ACHIEVEMENTS.length})</div>
+      <div class="ach-grid">${ACHIEVEMENTS.map(a=>{const got=unlocked.some(u=>u.id===a.id);return `<div class="ach-item ${got?'':'locked'}"><span class="ach-emoji">${a.emoji}</span><span class="ach-name">${a.name}</span></div>`}).join('')}</div>
+    </div>
+    <div class="result-card">
+      <div class="result-card-label" style="color:var(--amber)">✦ สถิติการเดินทาง</div>
+      <div class="score-row" style="margin-bottom:0">
+        <div class="score-chip">⏱️ เวลาเล่น<span>${fmtTime(elapsedSec)}</span></div>
+        <div class="score-chip">🔁 เล่นทั้งหมด<span>${gameData.playCount}</span></div>
+        <div class="score-chip">🌟 จุดแข็งสูงสุด<span style="font-size:13px">${statNames[maxStat[0]]}</span></div>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-card-label" style="color:var(--cyan)">✦ บทเรียนจักรวาล</div>
+      <div class="result-climate"><p>
+        การเดินทางของคุณพิสูจน์ว่าจุดแข็งหลักของคุณคือ <strong>${statNames[maxStat[0]]}</strong><br><br>
+        ในโลกแห่งความเป็นจริง ภาวะโลกร้อนไม่ใช่ปัญหาของ "คนอื่น" ทุกการตัดสินใจเล็กๆ ของเราล้วนเป็นส่วนหนึ่งของเรื่องราวใหญ่กว่า เหมือนที่คุณเพิ่งเผชิญในการเดินทางนี้<br><br>
+        <strong>ลดการใช้พลาสติก · เลือกพลังงานสะอาด · ปลูกต้นไม้ · เลือกผู้นำที่ใส่ใจโลก</strong><br><br>
+        ทุกการกระทำของคุณวันนี้คือแสงดาวที่ส่องในจักรวาลที่มืดมิด
+      </p></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-launch ripple" id="share-btn">📤 แชร์ผลลัพธ์</button>
+      <button class="btn-ghost ripple" id="share-game-btn">🔗 แชร์เกม</button>
+      <button class="btn-ghost ripple" id="save-image-btn">📷 บันทึกเป็นรูปภาพ</button>
+      <button class="btn-restart" id="restart-btn" style="margin:0">↺ เริ่มภารกิจใหม่</button>
+    </div>
+  `;
+  drawRadar(sc);
+  document.getElementById('share-btn').addEventListener('click',()=>shareResult(profile));
+  document.getElementById('share-game-btn').addEventListener('click',shareGameOnly);
+  document.getElementById('save-image-btn').addEventListener('click',()=>quickSaveImage(profile));
+  document.getElementById('restart-btn').addEventListener('click',restart);
+  unlocked.forEach((a,i)=>setTimeout(()=>{Audio1.achievement();showToast(a)},600+i*450));
+}
+
+function drawRadar(stats){
+  const c=document.getElementById('radar-canvas');if(!c)return;
+  const ctx=c.getContext('2d');const cx0=140,cy0=140,R=100;
+  const keys=['survival','empathy','wisdom','courage'];const labels=['🛡','💚','🧠','💪'];
+  const maxVal=Math.max(20,...keys.map(k=>stats[k]));
+  ctx.clearRect(0,0,280,280);
+  ctx.strokeStyle='rgba(0,229,255,0.15)';
+  for(let ring=1;ring<=4;ring++){ctx.beginPath();for(let i=0;i<=keys.length;i++){const ang=-Math.PI/2+i*(Math.PI*2/keys.length);const r=R*ring/4;const x=cx0+Math.cos(ang)*r,y=cy0+Math.sin(ang)*r;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)}ctx.stroke()}
+  ctx.fillStyle='#F0F4FF';ctx.font='16px sans-serif';ctx.textAlign='center';
+  keys.forEach((k,i)=>{const ang=-Math.PI/2+i*(Math.PI*2/keys.length);const x=cx0+Math.cos(ang)*(R+22),y=cy0+Math.sin(ang)*(R+22);ctx.beginPath();ctx.moveTo(cx0,cy0);ctx.lineTo(cx0+Math.cos(ang)*R,cy0+Math.sin(ang)*R);ctx.strokeStyle='rgba(0,229,255,0.12)';ctx.stroke();ctx.fillText(labels[i],x,y+5)});
+  ctx.beginPath();
+  keys.forEach((k,i)=>{const ang=-Math.PI/2+i*(Math.PI*2/keys.length);const val=Math.min(1,stats[k]/maxVal)*R;const x=cx0+Math.cos(ang)*val,y=cy0+Math.sin(ang)*val;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+  ctx.closePath();ctx.fillStyle='rgba(0,229,255,0.22)';ctx.fill();ctx.strokeStyle='#00E5FF';ctx.lineWidth=2;ctx.stroke();
+}
+
+/* SHARE CARD (3:4 image) */
+function wrapCanvasText(ctx,text,cx,startY,maxWidth,lineHeight,maxLines){
+  let line='',y=startY,lines=0;const chars=[...text];
+  for(let idx=0;idx<chars.length;idx++){
+    const ch=chars[idx];const testLine=line+ch;
+    if(ctx.measureText(testLine).width>maxWidth&&line.length>0){
+      lines++;
+      if(maxLines&&lines>=maxLines&&idx<chars.length-1){ctx.fillText(line.replace(/.$/,'…'),cx,y);return y}
+      ctx.fillText(line,cx,y);line=ch;y+=lineHeight;
+    }else{line=testLine}
+  }
+  if(line){ctx.fillText(line,cx,y);y+=lineHeight}
+  return y;
+}
+function roundRectPath(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function loadImageAsync(src){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=src})}
+async function generateQRDataUrl(text,size){
+  if(typeof QRCode==='undefined')return null;
+  try{
+    const tempDiv=document.createElement('div');tempDiv.style.cssText='position:fixed;left:-9999px;top:-9999px';document.body.appendChild(tempDiv);
+    new QRCode(tempDiv,{text,width:size,height:size,colorDark:'#00E5FF',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    await new Promise(r=>setTimeout(r,80));
+    let dataUrl=null;const canvasEl=tempDiv.querySelector('canvas');const imgEl=tempDiv.querySelector('img');
+    if(canvasEl)dataUrl=canvasEl.toDataURL('image/png');else if(imgEl)dataUrl=imgEl.src;
+    document.body.removeChild(tempDiv);return dataUrl;
+  }catch(e){return null}
+}
+async function drawShareCard(profile){
+  const canvas=document.getElementById('share-card-canvas');canvas.width=900;canvas.height=1200;
+  const ctx=canvas.getContext('2d');
+  const bgGrad=ctx.createRadialGradient(450,420,50,450,650,950);bgGrad.addColorStop(0,'#0a1420');bgGrad.addColorStop(1,'#000003');
+  ctx.fillStyle=bgGrad;ctx.fillRect(0,0,900,1200);
+  for(let i=0;i<200;i++){const x=Math.random()*900,y=Math.random()*1200,r=Math.random()*1.6+.3;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fillStyle=`rgba(255,255,255,${Math.random()*.6+.2})`;ctx.fill()}
+  const glow=ctx.createRadialGradient(450,420,20,450,420,320);glow.addColorStop(0,(profile.color||'#00E5FF')+'55');glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,900,1200);
+  ctx.textAlign='center';
+  ctx.fillStyle='#00E5FF';ctx.font='24px sans-serif';ctx.fillText('มนุษย์คนสุดท้าย · The Last Human',450,66);
+  ctx.fillStyle='#7B8BA5';ctx.font='16px sans-serif';ctx.fillText('ผลการเดินทาง',450,92);
+  ctx.font='168px sans-serif';ctx.fillText(profile.emoji,450,440);
+  ctx.fillStyle=profile.color||'#00E5FF';ctx.font='bold 48px sans-serif';ctx.fillText(profile.name,450,510);
+  ctx.fillStyle='#A0AEBF';ctx.font='22px sans-serif';
+  const subEndY=wrapCanvasText(ctx,profile.sub,450,548,700,28,2);
+  const dividerY=subEndY+22;
+  ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.beginPath();ctx.moveTo(150,dividerY);ctx.lineTo(750,dividerY);ctx.stroke();
+  const statNamesShort={survival:'อยู่รอด',empathy:'เมตตา',wisdom:'ปัญญา',courage:'กล้า'};
+  const statIcons={survival:'🛡',empathy:'💚',wisdom:'🧠',courage:'💪'};
+  const chipY=dividerY+26,chipH=78,chipW=190,chipGap=18;const totalW=chipW*4+chipGap*3;let chipX=450-totalW/2;
+  Object.keys(statNamesShort).forEach(k=>{
+    roundRectPath(ctx,chipX,chipY,chipW,chipH,10);ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.stroke();
+    ctx.fillStyle='#F0F4FF';ctx.font='30px sans-serif';ctx.fillText(statIcons[k]+' '+sc[k],chipX+chipW/2,chipY+38);
+    ctx.fillStyle='#7B8BA5';ctx.font='16px sans-serif';ctx.fillText(statNamesShort[k],chipX+chipW/2,chipY+62);
+    chipX+=chipW+chipGap;
+  });
+  const endingY=chipY+chipH+42;
+  ctx.fillStyle='#FFB300';ctx.font='bold 22px sans-serif';
+  let endingText='Ending: '+profile.trait;
+  if(civilizationChoice)endingText+=' · '+civilizationChoice.resultName;
+  const endingEndY=wrapCanvasText(ctx,endingText,450,endingY,760,26,2);
+  const healLabelY=endingEndY+34;
+  ctx.fillStyle='#FFB300';ctx.font='20px sans-serif';ctx.fillText('✦ ข้อความถึงคุณ',450,healLabelY);
+  ctx.fillStyle='#00E676';ctx.font='italic 23px sans-serif';
+  const healEndY=wrapCanvasText(ctx,profile.heal,450,healLabelY+34,700,30,4);
+  const qrSize=140;const qrDataUrl=await generateQRDataUrl(shareLink(),qrSize*2);
+  let afterQrY=healEndY+30;
+  if(qrDataUrl){
+    try{
+      const qrImg=await loadImageAsync(qrDataUrl);
+      const qrX=450-qrSize/2,qrY=healEndY+20;
+      roundRectPath(ctx,qrX-10,qrY-10,qrSize+20,qrSize+20,8);ctx.fillStyle='rgba(255,255,255,0.95)';ctx.fill();
+      ctx.drawImage(qrImg,qrX,qrY,qrSize,qrSize);
+      afterQrY=qrY+qrSize+34;
+    }catch(e){}
+  }
+  ctx.fillStyle='#7B8BA5';ctx.font='18px sans-serif';ctx.fillText('สแกนหรือเข้าเล่นได้ที่:',450,afterQrY);
+  ctx.fillStyle='#00E5FF';ctx.font='bold 20px sans-serif';
+  wrapCanvasText(ctx,shareLink(),450,afterQrY+30,760,25,2);
+  return canvas.toDataURL('image/png');
+}
+async function shareResult(profile){Audio1.click();currentShareProfile=profile;const dataUrl=await drawShareCard(profile);document.getElementById('share-preview-img').src=dataUrl;openModal('share-preview-modal')}
+async function quickSaveImage(profile){Audio1.click();const dataUrl=await drawShareCard(profile);const a=document.createElement('a');a.href=dataUrl;a.download='last-human-result.png';a.click();showFriendInviteToast()}
+function buildShareText(profile){
+  if(!profile)return `เล่นเกม "มนุษย์คนสุดท้าย · The Last Human"`;
+  return `ฉันคือ${profile.name} ${profile.emoji} จากเกม "มนุษย์คนสุดท้าย · The Last Human"${civilizationChoice?' และเลือกสร้าง '+civilizationChoice.resultName+' บน Nova Terra':''} คุณเป็นดาวอะไร?`;
+}
+function resetArrivalScreen(){
+  const arrivalScreen=document.getElementById('arrival-screen');
+  if(arrivalScreen)arrivalScreen.classList.remove('landed');
+  const box=document.getElementById('arrival-ai-box');
+  if(box)box.innerHTML='';
+  document.querySelectorAll('#landing-visuals span').forEach(el=>el.classList.remove('show'));
+  const label=document.getElementById('final-choice-label');
+  if(label)label.classList.remove('show');
+  const wrap=document.getElementById('final-choices');
+  if(wrap){wrap.classList.remove('show');wrap.innerHTML=''}
+  const closing=document.getElementById('closing-message');
+  if(closing){closing.classList.remove('show');closing.innerHTML=''}
+}
+function restart(){Audio1.click();cur=0;sc={survival:0,empathy:0,wisdom:0,courage:0};civilizationChoice=null;resetStory();resetArrivalScreen();if(elapsedTimer)clearInterval(elapsedTimer);show('intro-screen');renderHistoryPanel()}
+
+/* UI WIRING */
+document.getElementById('start-btn').addEventListener('click',(e)=>{spawnRipple(e,e.currentTarget);startGame()});
+document.getElementById('start-btn').addEventListener('mouseenter',()=>{if(Audio1.ctx)Audio1.hover()});
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.querySelectorAll('[data-close]').forEach(btn=>{btn.addEventListener('click',()=>closeModal(btn.dataset.close))});
+document.getElementById('settings-btn-intro').addEventListener('click',()=>{Audio1.init();openModal('settings-modal')});
+document.getElementById('pause-btn').addEventListener('click',()=>openModal('pause-modal'));
+document.getElementById('sound-toggle-btn').addEventListener('click',()=>{Audio1.init();Audio1.toggleMute()});
+function syncSoundSwitches(){document.querySelectorAll('#sound-switch,#sound-switch-2').forEach(s=>s.checked=!Audio1.muted)}
+document.getElementById('sound-switch').addEventListener('change',e=>{Audio1.init();Audio1.toggleMute(!e.target.checked);syncSoundSwitches()});
+document.getElementById('sound-switch-2').addEventListener('change',e=>{Audio1.init();Audio1.toggleMute(!e.target.checked);syncSoundSwitches()});
+document.getElementById('vol-slider').addEventListener('input',e=>{Audio1.init();Audio1.setVolume(e.target.value/100);document.getElementById('vol-slider-2').value=e.target.value});
+document.getElementById('vol-slider-2').addEventListener('input',e=>{Audio1.init();Audio1.setVolume(e.target.value/100);document.getElementById('vol-slider').value=e.target.value});
+document.getElementById('restart-from-pause').addEventListener('click',()=>{closeModal('pause-modal');openModal('confirm-modal')});
+document.getElementById('confirm-restart-yes').addEventListener('click',()=>{closeModal('confirm-modal');restart()});
+document.getElementById('share-download-btn').addEventListener('click',()=>{const a=document.createElement('a');a.href=document.getElementById('share-preview-img').src;a.download='last-human-result.png';a.click();showFriendInviteToast()});
+document.getElementById('share-copylink-btn').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(shareLink());alert('คัดลอกลิงก์แล้ว ✅');showFriendInviteToast()}catch(e){prompt('คัดลอกลิงก์นี้:',shareLink());showFriendInviteToast()}});
+document.getElementById('share-native-btn').addEventListener('click',async()=>{
+  const dataUrl=document.getElementById('share-preview-img').src;
+  try{
+    const res=await fetch(dataUrl);const blob=await res.blob();const file=new File([blob],'last-human-result.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'มนุษย์คนสุดท้าย · The Last Human',text:buildShareText(currentShareProfile)+' '+shareLink()});showFriendInviteToast()}
+    else if(navigator.share){await navigator.share({title:'มนุษย์คนสุดท้าย · The Last Human',text:buildShareText(currentShareProfile),url:shareLink()});showFriendInviteToast()}
+    else{alert('อุปกรณ์นี้ไม่รองรับการแชร์โดยตรง กรุณาดาวน์โหลดรูปภาพหรือคัดลอกลิงก์แทน')}
+  }catch(e){alert('ไม่สามารถแชร์ได้ในขณะนี้ กรุณาดาวน์โหลดรูปภาพหรือคัดลอกลิงก์แทน')}
+});
+document.getElementById('share-fb-btn').addEventListener('click',()=>{Audio1.click();window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink())}`,'_blank','noopener,noreferrer,width=600,height=520');showFriendInviteToast()});
+document.getElementById('share-x-btn').addEventListener('click',()=>{Audio1.click();const text=buildShareText(currentShareProfile);window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareLink())}`,'_blank','noopener,noreferrer,width=600,height=520');showFriendInviteToast()});
+document.getElementById('share-line-btn').addEventListener('click',()=>{Audio1.click();const text=buildShareText(currentShareProfile);window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareLink())}&text=${encodeURIComponent(text)}`,'_blank','noopener,noreferrer,width=600,height=520');showFriendInviteToast()});
+document.getElementById('share-discord-btn').addEventListener('click',async()=>{
+  Audio1.click();const text=buildShareText(currentShareProfile)+'\n'+shareLink();
+  try{await navigator.clipboard.writeText(text);alert('คัดลอกข้อความสำหรับ Discord แล้ว ✅ วางในช่องแชทของคุณได้เลย');showFriendInviteToast()}
+  catch(e){prompt('คัดลอกข้อความนี้ไปวางใน Discord:',text);showFriendInviteToast()}
+});
+</script>
+</body>
+</html>
